@@ -31,10 +31,12 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback,
 
    // private lateinit var mapa: GoogleMap
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        val mapFragment =
+
+       val mapFragment =
             supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(this)
 
@@ -43,10 +45,13 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback,
             startForegroundService(intent)
         }
 
-       tvTiempo = findViewById(R.id.tvTiempo)
-       tvDistancia = findViewById(R.id.tvDistancia)
-       tvRitmoMedio = findViewById(R.id.tvVelocidad)
-       tvVelocidad = findViewById(R.id.tvVelocidad)
+       tvTiempo = binding.tvTiempo
+       tvDistancia = binding.tvDistancia
+       tvRitmoMedio = binding.tvRitmoMedio
+       tvVelocidad = binding.tvVelocidad
+
+       listaPuntos = arrayListOf()
+       (listaPuntos as ArrayList<LatLng>).clear()
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -175,18 +180,21 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback,
 
     companion object {
 
-        var contador = 0
+        private const val LOCATION_PERMISSION_REQUEST_CODE = 1
 
+        var contadorTiempo = 0
         var velocidad = 0.0
         var ritmoMedio = 0.0
         var distancia = 0.0
 
         lateinit var mapa:GoogleMap
-        lateinit var tvTiempo:TextView
 
+        lateinit var tvTiempo:TextView
         lateinit var tvDistancia: TextView
         lateinit var tvRitmoMedio: TextView
         lateinit var tvVelocidad: TextView
+
+        lateinit var listaPuntos : Iterable<LatLng>
 
 
 
@@ -198,6 +206,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback,
             mapa.animateCamera(CameraUpdateFactory.newLatLngZoom(posicionMapa, 17f), 1000, null)
 
         }
-        private const val LOCATION_PERMISSION_REQUEST_CODE = 1
+
     }
 }

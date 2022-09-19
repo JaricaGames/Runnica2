@@ -9,15 +9,21 @@ import android.os.Build
 import android.os.IBinder
 import android.os.Looper
 import android.util.Log
+import androidx.core.content.ContextCompat
 import com.google.android.gms.location.*
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.PolylineOptions
+import com.google.android.gms.maps.model.RoundCap
 import com.jarica.runnica2.Constantes.FASTEST_INTERVAL
 import com.jarica.runnica2.Constantes.ID_CANAL
 import com.jarica.runnica2.Constantes.ID_NOTIFICACION
 import com.jarica.runnica2.Constantes.UPDATE_INTERVAL
 import com.jarica.runnica2.Constantes.radioTierra
 import com.jarica.runnica2.MainActivity.Companion.centrarMapa
-import com.jarica.runnica2.MainActivity.Companion.contador
+import com.jarica.runnica2.MainActivity.Companion.contadorTiempo
 import com.jarica.runnica2.MainActivity.Companion.distancia
+import com.jarica.runnica2.MainActivity.Companion.listaPuntos
+import com.jarica.runnica2.MainActivity.Companion.mapa
 import com.jarica.runnica2.MainActivity.Companion.ritmoMedio
 import com.jarica.runnica2.MainActivity.Companion.tvDistancia
 import com.jarica.runnica2.MainActivity.Companion.tvRitmoMedio
@@ -78,8 +84,8 @@ class MyServicio() : Service() {
 
                 val miUltimaLocalizacion : Location? = locationResult.lastLocation
 
-                    contador++
-                    var tiempo:String = getTimeStringFromDoblue(contador)
+                    contadorTiempo++
+                    var tiempo:String = getTimeStringFromDoblue(contadorTiempo)
                     tvTiempo.text = tiempo
                     tvDistancia.text = roundNumber(distancia.toString(), 2)
                     tvRitmoMedio.text = roundNumber(ritmoMedio.toString(),2)
@@ -91,7 +97,7 @@ class MyServicio() : Service() {
                     }
 
                 mostrarNotificacion()
-                println(contador)
+                println(contadorTiempo)
             }
         }
     }
@@ -103,12 +109,12 @@ class MyServicio() : Service() {
         var new_latitude: Double = location.latitude
         var new_longitude: Double = location.longitude
 
-        if(contador == 1){
+        if(contadorTiempo == 1){
             latitud = location.latitude
             longitud = location.longitude
         }
 
-        if (contador > 1){
+        if (contadorTiempo > 1){
             new_latitude = location.latitude
             new_longitude = location.longitude
         }
@@ -117,8 +123,25 @@ class MyServicio() : Service() {
         calcularVelocidad(distanciaIntervalo)
         calcularRitmo()
 
+        //Dicujado de la polilinea
+        var nuevaPosicion = LatLng(new_latitude,new_longitude)
+        (listaPuntos as ArrayList<LatLng>).add(nuevaPosicion)
+        println(listaPuntos)
+        crearPolilinea(listaPuntos)
+
         latitud = new_latitude
         longitud = new_longitude
+    }
+
+    private fun crearPolilinea(listaPuntos: Iterable<LatLng>) {
+        val polilineaOpciones = PolylineOptions()
+            .width(25f)
+            .color(ContextCompat.getColor(this,R.color.purple_200))
+            .addAll(listaPuntos)
+
+        var polilinea = mapa.addPolyline(polilineaOpciones)
+        polilinea.startCap = RoundCap()
+
     }
 
 
@@ -130,36 +153,12 @@ class MyServicio() : Service() {
             Looper.getMainLooper())
     }
 
-    fun createLocationRequest() {
+    private fun createLocationRequest() {
         locationRequest = LocationRequest.create().apply {
             interval = UPDATE_INTERVAL
             fastestInterval = FASTEST_INTERVAL
             priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         }
-    }
-
-
-
-
-    //Metodo que calcula la distancia recorrida en un intervalo de timepo
-    private fun calcularDistancia(n_lt: Double, n_lg: Double): Double{
-
-        //Calculo de los deltas
-        val dLat = Math.toRadians(n_lt - latitud)
-        val dLng = Math.toRadians(n_lg - longitud)
-
-        val sindLat = Math.sin(dLat / 2)
-        val sindLng = Math.sin(dLng / 2)
-        val va1 =
-            Math.pow(sindLat, 2.0) + (Math.pow(sindLng, 2.0)
-                    * Math.cos(Math.toRadians(latitud)) * Math.cos(
-                Math.toRadians( n_lt  )
-            ))
-        val va2 = 2 * Math.atan2(Math.sqrt(va1), Math.sqrt(1 - va1))
-        var n_distance =  radioTierra * va2
-
-        distancia += n_distance
-        return n_distance
     }
 
 
@@ -173,7 +172,7 @@ class MyServicio() : Service() {
 
         val notification = Notification
             .Builder(this, ID_CANAL)
-            .setContentText(getTimeStringFromDoblue(contador))
+            .setContentText(getTimeStringFromDoblue(contadorTiempo))
             .setSmallIcon(R.drawable.ic_bike)
             .setContentIntent(pendingIntent)
             .build()
@@ -198,6 +197,29 @@ class MyServicio() : Service() {
 
 
         }
+    }
+
+    //////////  CALCULOS ///////////////
+
+    //Metodo que calcula la distancia recorrida en un intervalo de timepo
+    private fun calcularDistancia(n_lt: Double, n_lg: Double): Double{
+
+        //Calculo de los deltas
+        val dLat = Math.toRadians(n_lt - latitud)
+        val dLng = Math.toRadians(n_lg - longitud)
+
+        val sindLat = Math.sin(dLat / 2)
+        val sindLng = Math.sin(dLng / 2)
+        val va1 =
+            Math.pow(sindLat, 2.0) + (Math.pow(sindLng, 2.0)
+                    * Math.cos(Math.toRadians(latitud)) * Math.cos(
+                Math.toRadians( n_lt  )
+            ))
+        val va2 = 2 * Math.atan2(Math.sqrt(va1), Math.sqrt(1 - va1))
+        var n_distance =  radioTierra * va2
+
+        distancia += n_distance
+        return n_distance
     }
 
     private fun makeTimeString(hours: Int, minutes: Int, seconds: Int): String = String.format("%02d:%02d:%02d", hours, minutes, seconds)
@@ -237,7 +259,7 @@ class MyServicio() : Service() {
 
     //Metodo que calcula el ritmo de la carrera
     private fun calcularRitmo() {
-        ritmoMedio = contador/ (distancia*60)
+        ritmoMedio = contadorTiempo/ (distancia*60)
     }
 
 }
