@@ -6,66 +6,180 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <TextView
-        android:id="@+id/tvTiempo"
-        android:layout_width="wrap_content"
+
+
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="0dp"
+        android:layout_height="130dp"
+        android:layout_marginTop="25dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:backgroundTint="@color/blanco"
+        app:cardCornerRadius="20dp"
+        app:layout_constraintEnd_toEndOf="@+id/map"
+        app:layout_constraintStart_toStartOf="@+id/map"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/tvTiempo"
+                android:layout_width="370dp"
+                android:layout_height="45dp"
+                android:fontFamily="@font/poppins_bold"
+                android:text="00:00:00"
+                android:textAlignment="center"
+                android:textColor="@color/azul"
+                android:textSize="30sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvTiempoTexto"
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_light"
+                android:text="Tiempo"
+                android:textAlignment="center"
+                android:textColor="@color/gris"
+                android:textSize="11sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvTiempo" />
+
+
+
+            <LinearLayout
+                android:id="@+id/lyTextos"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                app:layout_constraintTop_toBottomOf="@+id/tvTiempoTexto"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent">
+
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginEnd="15dp">
+
+                    <TextView
+                        android:id="@+id/tvDistancia"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/poppins_bold"
+                        android:text="1.1"
+                        android:textAlignment="center"
+                        android:textColor="@color/azul"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:id="@+id/tvDistanciaTexto"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/poppins_light"
+                        android:text="Distancia (Km)"
+                        android:textColor="@color/gris"
+                        android:textSize="11sp"
+                        android:textAlignment="center"/>
+
+
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginEnd="15dp">
+
+                    <TextView
+                        android:id="@+id/tvVelocidad"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/poppins_bold"
+                        android:text="6.23"
+                        android:textAlignment="center"
+                        android:textColor="@color/azul"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:id="@+id/tvVelocidadTexto"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/poppins_light"
+                        android:text="Velocidad (Km/h)"
+                        android:textColor="@color/gris"
+                        android:textSize="11sp"
+                        android:textAlignment="center"/>
+
+
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvRitmoMedio"
+                        android:layout_width="match_parent"
+                        android:textAlignment="center"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/poppins_bold"
+                        android:text="5.5"
+                        android:textColor="@color/azul"
+                        android:textSize="15sp"
+                        app:layout_constraintStart_toEndOf="@+id/tvVelocidad"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tvRitmoMedioTexto"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/poppins_light"
+                        android:text="Ritmo (Km/min)"
+                        android:textColor="@color/gris"
+                        android:textSize="11sp"
+                        android:textAlignment="center"/>
+
+
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+
+
+            </LinearLayout>
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+    </androidx.cardview.widget.CardView>
+
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/floatingActionButton"
+        android:layout_width="78dp"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        android:clickable="true"
+
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:text="00:00:00"
-        android:fontFamily="sans-serif"
-        android:textSize="25sp"
-        android:textColor="@color/black"/>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/lyTextos"
-        app:layout_constraintTop_toBottomOf="@+id/tvTiempo"
-        android:gravity="center">
-
-
-        <TextView
-            android:id="@+id/tvDistancia"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/tvTiempo"
-            app:layout_constraintStart_toStartOf="parent"
-            android:text="1.1"
-            android:fontFamily="sans-serif"
-            android:textSize="25sp"
-            android:textColor="@color/black"
-            android:layout_margin="5dp"/>
-        <TextView
-            android:id="@+id/tvVelocidad"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/tvTiempo"
-            app:layout_constraintStart_toEndOf="@+id/tvDistancia"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:text="6.2"
-            android:fontFamily="sans-serif"
-            android:textSize="25sp"
-            android:textColor="@color/black"
-            android:layout_margin="5dp"/>
-        <TextView
-            android:id="@+id/tvRitmoMedio"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            app:layout_constraintTop_toBottomOf="@+id/tvTiempo"
-            app:layout_constraintStart_toEndOf="@+id/tvVelocidad"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:text="5.5"
-            android:fontFamily="sans-serif"
-            android:textSize="25sp"
-            android:textColor="@color/black"/>
-
-
-    </LinearLayout>
-
-
+        app:srcCompat="@android:drawable/btn_radio"
+        tools:ignore="SpeakableTextPresentCheck" />
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/map"
@@ -74,17 +188,12 @@
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/lyTextos"/>
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/floatingActionButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="40dp"
-        android:layout_marginBottom="40dp"
-        android:clickable="true"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@android:drawable/btn_radio" />
+
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

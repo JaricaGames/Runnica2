@@ -2,7 +2,10 @@ package com.jarica.runnica2
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.location.Location
 import androidx.appcompat.app.AppCompatActivity
@@ -19,6 +22,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.jarica.runnica2.PermissionUtils.PermissionDeniedDialog.Companion.newInstance
 import com.jarica.runnica2.PermissionUtils.isPermissionGranted
 import com.jarica.runnica2.databinding.ActivityMainBinding
+import kotlin.math.roundToInt
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback,
     ActivityCompat.OnRequestPermissionsResultCallback,
@@ -26,24 +30,31 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback,
     GoogleMap.OnMyLocationClickListener {
 
     private lateinit var binding: ActivityMainBinding
+    private var tiempoEmpezado = false
+    private var tiempoCarrera = 0.0
 
     private var permissionDenied = false
 
    // private lateinit var mapa: GoogleMap
     override fun onCreate(savedInstanceState: Bundle?) {
 
-        super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+       super.onCreate(savedInstanceState)
+       binding = ActivityMainBinding.inflate(layoutInflater)
+       setContentView(binding.root)
 
        val mapFragment =
-            supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
-        mapFragment?.getMapAsync(this)
+           supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
+       mapFragment?.getMapAsync(this)
 
-        binding.floatingActionButton.setOnClickListener {
-            val intent = Intent(this, MyServicio::class.java)
-            startForegroundService(intent)
-        }
+
+       binding.floatingActionButton.setOnClickListener {
+           val intent = Intent(applicationContext, MyServicio::class.java)
+           startForegroundService(intent)
+           registerReceiver(updateTime, IntentFilter(MyServicio.TIMER_UPDATE))
+       }
+
+
+
 
        tvTiempo = binding.tvTiempo
        tvDistancia = binding.tvDistancia
@@ -53,6 +64,15 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback,
        listaPuntos = arrayListOf()
        (listaPuntos as ArrayList<LatLng>).clear()
     }
+
+     private val updateTime : BroadcastReceiver = object : BroadcastReceiver() {
+       override fun onReceive(context: Context, intent: Intent) {
+
+           tiempoCarrera = intent.getDoubleExtra(MyServicio.TIMER_EXTRA, 0.0)
+           binding.tvTiempo.text = getTimeStringFromDoblue(tiempoCarrera)
+
+       }
+   }
 
     override fun onMapReady(googleMap: GoogleMap) {
         mapa = googleMap
@@ -183,6 +203,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback,
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
 
         var contadorTiempo = 0
+        var contadorTiempo2 = 0
         var velocidad = 0.0
         var ritmoMedio = 0.0
         var distancia = 0.0
@@ -207,5 +228,18 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback,
 
         }
 
+    }
+
+    private fun makeTimeString(hours: Int, minutes: Int, seconds: Int): String = String.format("%02d:%02d:%02d", hours, minutes, seconds)
+
+
+    private fun getTimeStringFromDoblue(time: Double): String {
+
+        val resultadoEntero = time.roundToInt()
+        val hours = resultadoEntero % 86400 / 3600
+        val minutes = resultadoEntero % 86400 % 3600 / 60
+        val seconds = resultadoEntero % 86400 % 3600 %60
+
+        return makeTimeString ( hours, minutes, seconds)
     }
 }

@@ -27,17 +27,18 @@ import com.jarica.runnica2.MainActivity.Companion.mapa
 import com.jarica.runnica2.MainActivity.Companion.ritmoMedio
 import com.jarica.runnica2.MainActivity.Companion.tvDistancia
 import com.jarica.runnica2.MainActivity.Companion.tvRitmoMedio
-import com.jarica.runnica2.MainActivity.Companion.tvTiempo
 import com.jarica.runnica2.MainActivity.Companion.tvVelocidad
 import com.jarica.runnica2.MainActivity.Companion.velocidad
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 class MyServicio() : Service() {
 
+    private val timer = Timer()
+    private var tiempoCarrera = 0.0
 
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
-    private lateinit var locationRequest : LocationRequest
-    private lateinit var locationCallback: LocationCallback
 
     //Variables de mediciones
     private var latitud:Double = 0.0
@@ -47,11 +48,9 @@ class MyServicio() : Service() {
     override fun onBind(intent: Intent): IBinder? = null
 
     override fun onCreate() {
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
 
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
         crearCanaldeNotificacion()
-        createLocationRequest()
-        createLocationCallBack()
 
 
     }
@@ -62,59 +61,91 @@ class MyServicio() : Service() {
         Log.d(TAG, "Servivcio Iniciado")
         mostrarNotificacion()
 
-            fusedLocationProviderClient.lastLocation
-                .addOnSuccessListener { location : Location? ->
 
-                    if (location != null) {
-
-                        startLocationUpdates()
-                    }
-                }
+        tiempoCarrera = intent!!.getDoubleExtra(TIMER_EXTRA, 0.0)
+        timer.scheduleAtFixedRate(TimeTask(tiempoCarrera), 0, 1000)
 
         return START_NOT_STICKY
 
     }
 
+    override fun onDestroy() {
+        timer.cancel()
+        super.onDestroy()
+    }
 
-    private fun createLocationCallBack() {
+    private inner class TimeTask (private var tiempoCarrera: Double): TimerTask(){
 
-        locationCallback = object : LocationCallback() {
+        override fun run() {
+
+            val intent = Intent (TIMER_UPDATE)
+            tiempoCarrera++
+            adminitrarLocalizacion()
+            intent.putExtra(TIMER_EXTRA, tiempoCarrera)
+            sendBroadcast(intent)
+
+        }
+
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun adminitrarLocalizacion() {
+
+        fusedLocationProviderClient.lastLocation.addOnSuccessListener { location ->
+            solicitarNuevaLocalizacion()
+                }
+    }
+
+    //Metodo que solicita una nueva localizacion
+    @SuppressLint("MissingPermission")
+    private fun solicitarNuevaLocalizacion() {
+
+        var miSolicitudLocalizacion = com.google.android.gms.location.LocationRequest()
+        miSolicitudLocalizacion.interval = 1000
+        miSolicitudLocalizacion.fastestInterval = 0
+        miSolicitudLocalizacion.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+
+        fusedLocationProviderClient.requestLocationUpdates(miSolicitudLocalizacion, miLocalizacionCallBack, Looper.getMainLooper() )
+
+    }
+
+    private val miLocalizacionCallBack = object : LocationCallback() {
 
             override fun onLocationResult(locationResult: LocationResult) {
 
                 val miUltimaLocalizacion : Location? = locationResult.lastLocation
 
-                    contadorTiempo++
-                    var tiempo:String = getTimeStringFromDoblue(contadorTiempo)
-                    tvTiempo.text = tiempo
-                    tvDistancia.text = roundNumber(distancia.toString(), 2)
-                    tvRitmoMedio.text = roundNumber(ritmoMedio.toString(),2)
-                    tvVelocidad.text = roundNumber(velocidad.toString(),2)
+                /*contadorTiempo++
+                var tiempo:String = getTimeStringFromDoblue(contadorTiempo)
+               // tvTiempo.text = tiempo
+                tvDistancia.text = roundNumber(distancia.toString(), 2)
+                tvRitmoMedio.text = roundNumber(ritmoMedio.toString(),2)
+                tvVelocidad.text = roundNumber(velocidad.toString(),2)*/
 
 
-                    if (miUltimaLocalizacion != null) {
-                        registerNewLocation(miUltimaLocalizacion)
-                    }
+                if (miUltimaLocalizacion != null) {
+                    registrarNuevaLocalizacion(miUltimaLocalizacion)
+                }
 
                 mostrarNotificacion()
                 println(contadorTiempo)
             }
-        }
+
     }
 
-    private fun registerNewLocation(location: Location) {
+    private fun registrarNuevaLocalizacion(location: Location) {
 
         centrarMapa(location.latitude, location.longitude)
 
         var new_latitude: Double = location.latitude
         var new_longitude: Double = location.longitude
 
-        if(contadorTiempo == 1){
+        if( tiempoCarrera == 1.0){
             latitud = location.latitude
             longitud = location.longitude
         }
 
-        if (contadorTiempo > 1){
+        if (tiempoCarrera > 1.0){
             new_latitude = location.latitude
             new_longitude = location.longitude
         }
@@ -136,29 +167,12 @@ class MyServicio() : Service() {
     private fun crearPolilinea(listaPuntos: Iterable<LatLng>) {
         val polilineaOpciones = PolylineOptions()
             .width(25f)
-            .color(ContextCompat.getColor(this,R.color.purple_200))
+            .color(ContextCompat.getColor(this, R.color.azul))
             .addAll(listaPuntos)
 
         var polilinea = mapa.addPolyline(polilineaOpciones)
         polilinea.startCap = RoundCap()
 
-    }
-
-
-    @SuppressLint("MissingPermission")
-    private fun startLocationUpdates() {
-
-        fusedLocationProviderClient.requestLocationUpdates(locationRequest,
-            locationCallback,
-            Looper.getMainLooper())
-    }
-
-    private fun createLocationRequest() {
-        locationRequest = LocationRequest.create().apply {
-            interval = UPDATE_INTERVAL
-            fastestInterval = FASTEST_INTERVAL
-            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-        }
     }
 
 
@@ -260,6 +274,11 @@ class MyServicio() : Service() {
     //Metodo que calcula el ritmo de la carrera
     private fun calcularRitmo() {
         ritmoMedio = contadorTiempo/ (distancia*60)
+    }
+
+    companion object {
+        const val TIMER_UPDATE = "timerUpdated"
+        const val TIMER_EXTRA = "timeExtra"
     }
 
 }
