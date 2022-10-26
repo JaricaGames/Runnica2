@@ -10,21 +10,17 @@ import android.content.pm.PackageManager
 import android.location.Location
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.MenuItem
 import android.widget.Toast
-import android.widget.Toolbar
-import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.drawerlayout.widget.DrawerLayout
-import com.google.android.gms.location.FusedLocationProviderClient
+import com.jarica.runnica2.Constantes.ACTUALIZACION_CARRERA
+import com.jarica.runnica2.Constantes.OBJETO_CARRERA
+import com.jarica.runnica2.Constantes.TIEMPO_EXTRA
 import com.google.android.gms.location.LocationServices
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.navigation.NavigationView
 import com.jarica.runnica2.PermissionUtils.PermissionDeniedDialog.Companion.newInstance
@@ -36,10 +32,16 @@ class MainActivity : AppCompatActivity(),
     OnMapReadyCallback,
     ActivityCompat.OnRequestPermissionsResultCallback,
     GoogleMap.OnMyLocationButtonClickListener,
-    GoogleMap.OnMyLocationClickListener {
+    GoogleMap.OnMyLocationClickListener, NavigationView.OnNavigationItemSelectedListener
+
+{
 
     //BINDING PARA INTERFAZ
     private lateinit var binding: ActivityMainBinding
+
+    //VARIABLES NAVIGATIONDRAWER
+    private lateinit var drawer: DrawerLayout
+    private lateinit var toggle: ActionBarDrawerToggle
 
 
     //VARIABLES DE CARRERA
@@ -64,10 +66,27 @@ class MainActivity : AppCompatActivity(),
             supportFragmentManager.findFragmentById(R.id.Googlemap) as SupportMapFragment?
         mapFragment?.getMapAsync(this)
 
+        val toolbar: androidx.appcompat.widget.Toolbar = findViewById(R.id.actionbar)
+        setSupportActionBar(toolbar)
+
+        drawer = binding.drawerLayout
+        toggle = ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
+        drawer.addDrawerListener(toggle)
+
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setHomeButtonEnabled(true)
+
+        val navigationView: NavigationView = binding.navView
+        navigationView.setNavigationItemSelectedListener(this)
+
+
+
+
+
         iniciarObjetos()
 
         listaPuntos = arrayListOf()
-        (listaPuntos as ArrayList<LatLng>).clear()
+        listaPuntos as ArrayList<LatLng>
     }
 
 
@@ -78,14 +97,14 @@ class MainActivity : AppCompatActivity(),
 
         //BOTON PLAY
 
-        intent.putExtra(MyServicio.TIEMPO_EXTRA, tiempoCarreraInterfaz)
+        intent.putExtra(TIEMPO_EXTRA, tiempoCarreraInterfaz)
         binding.floatingActionButton.setOnClickListener {
             if (tiempoCarreraInterfaz == 0.0) {
                 tiempoEmpezado = true
                 startForegroundService(intent)
                 registerReceiver(
                     actualizadorInterfaz,
-                    IntentFilter(MyServicio.ACTUALIZACION_CARRERA)
+                    IntentFilter(ACTUALIZACION_CARRERA)
                 )
             }
 
@@ -117,7 +136,7 @@ class MainActivity : AppCompatActivity(),
 
         override fun onReceive(context: Context, intent: Intent) {
 
-            carreraRealizada = intent.getParcelableExtra(MyServicio.OBJETO_CARRERA)
+            carreraRealizada = intent.getParcelableExtra(OBJETO_CARRERA)
 
             //RECEPCION DE PARAMETROS
             tiempoCarreraInterfaz = carreraRealizada!!.tiempoCarrera
@@ -141,6 +160,8 @@ class MainActivity : AppCompatActivity(),
         googleMap.setOnMyLocationButtonClickListener(this)
         googleMap.setOnMyLocationClickListener(this)
         mapa.mapType = GoogleMap.MAP_TYPE_HYBRID
+
+
         enableMyLocation()
         var FusedLocationProviderClientAux = LocationServices.getFusedLocationProviderClient(this)
         FusedLocationProviderClientAux.lastLocation
@@ -304,6 +325,10 @@ class MainActivity : AppCompatActivity(),
 
         }
 
+    }
+
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        TODO("Not yet implemented")
     }
 
 

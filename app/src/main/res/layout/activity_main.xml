@@ -41,7 +41,7 @@
             android:fontFamily="@font/poppins_regular"
             android:text="Duración"
             android:textColor="@color/navy"
-            android:textSize="12sp"
+            android:textSize="11sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvTiempo" />
@@ -67,7 +67,7 @@
             android:fontFamily="@font/poppins_regular"
             android:text="Distancia (Km)"
             android:textColor="@color/navy"
-            android:textSize="11sp"
+            android:textSize="10sp"
             app:layout_constraintEnd_toStartOf="@+id/tvVelocidadTexto"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvDistancia" />
@@ -93,7 +93,7 @@
             android:fontFamily="@font/poppins_regular"
             android:text="Velocidad (Km/h)"
             android:textColor="@color/navy"
-            android:textSize="11sp"
+            android:textSize="10sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvDistancia" />
@@ -119,7 +119,7 @@
             android:fontFamily="@font/poppins_regular"
             android:text="Ritmo (min/Km)"
             android:textColor="@color/navy"
-            android:textSize="11sp"
+            android:textSize="10sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/tvVelocidadTexto"
             app:layout_constraintTop_toBottomOf="@+id/tvDistancia" />
@@ -136,6 +136,7 @@
             app:layout_constraintTop_toBottomOf="@id/tvVelocidadTexto">
 
             <androidx.fragment.app.FragmentContainerView
+                xmlns:map="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/Googlemap"
                 android:name="com.google.android.gms.maps.SupportMapFragment"
                 android:layout_width="match_parent"
@@ -144,7 +145,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.0"
-                tools:context=".MapsActivity" />
+                tools:context=".MapsActivity"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

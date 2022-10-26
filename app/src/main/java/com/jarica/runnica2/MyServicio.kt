@@ -12,8 +12,11 @@ import com.google.android.gms.location.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.gms.maps.model.RoundCap
+import com.jarica.runnica2.Constantes.ACTUALIZACION_CARRERA
 import com.jarica.runnica2.Constantes.ID_CANAL
 import com.jarica.runnica2.Constantes.ID_NOTIFICACION
+import com.jarica.runnica2.Constantes.OBJETO_CARRERA
+import com.jarica.runnica2.Constantes.TIEMPO_EXTRA
 import com.jarica.runnica2.Constantes.radioTierra
 import com.jarica.runnica2.MainActivity.Companion.centrarMapa
 import com.jarica.runnica2.MainActivity.Companion.listaPuntos
@@ -288,9 +291,9 @@ class MyServicio() : Service() {
         var distanciaCompanion = 0.0
         var ritmoMedioCompanion = 0.0
 
-        const val OBJETO_CARRERA = "objetoCarrera"
+        /*const val OBJETO_CARRERA = "objetoCarrera"
         const val ACTUALIZACION_CARRERA = "actualizacionCarrera"
-        const val TIEMPO_EXTRA = "tiempoExtra"
+        const val TIEMPO_EXTRA = "tiempoExtra"*/
     }
 
 }
