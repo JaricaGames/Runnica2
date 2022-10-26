@@ -10,75 +10,145 @@ import android.content.pm.PackageManager
 import android.location.Location
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.TextView
+import android.view.LayoutInflater
+import android.view.MenuItem
 import android.widget.Toast
+import android.widget.Toolbar
+import androidx.appcompat.app.ActionBar
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.drawerlayout.widget.DrawerLayout
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.material.navigation.NavigationView
 import com.jarica.runnica2.PermissionUtils.PermissionDeniedDialog.Companion.newInstance
 import com.jarica.runnica2.PermissionUtils.isPermissionGranted
 import com.jarica.runnica2.databinding.ActivityMainBinding
 import kotlin.math.roundToInt
 
-class MainActivity : AppCompatActivity(), OnMapReadyCallback,
+class MainActivity : AppCompatActivity(),
+    OnMapReadyCallback,
     ActivityCompat.OnRequestPermissionsResultCallback,
     GoogleMap.OnMyLocationButtonClickListener,
     GoogleMap.OnMyLocationClickListener {
 
+    //BINDING PARA INTERFAZ
     private lateinit var binding: ActivityMainBinding
+
+
+    //VARIABLES DE CARRERA
     private var tiempoEmpezado = false
-    private var tiempoCarrera = 0.0
+    private var tiempoCarreraInterfaz = 0.0
+    private var distanciaInterfaz = 0.0
+    private var velocidadInterfaz = 0.0
+    private var ritmoMedioInterfaz = 0.0
+    private var carreraRealizada: Carrera? = null
+
 
     private var permissionDenied = false
 
-   // private lateinit var mapa: GoogleMap
     override fun onCreate(savedInstanceState: Bundle?) {
 
-       super.onCreate(savedInstanceState)
-       binding = ActivityMainBinding.inflate(layoutInflater)
-       setContentView(binding.root)
+        super.onCreate(savedInstanceState)
 
-       val mapFragment =
-           supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
-       mapFragment?.getMapAsync(this)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
+        val mapFragment =
+            supportFragmentManager.findFragmentById(R.id.Googlemap) as SupportMapFragment?
+        mapFragment?.getMapAsync(this)
 
-       binding.floatingActionButton.setOnClickListener {
-           val intent = Intent(applicationContext, MyServicio::class.java)
-           startForegroundService(intent)
-           registerReceiver(updateTime, IntentFilter(MyServicio.TIMER_UPDATE))
-       }
+        iniciarObjetos()
 
-
-
-
-       tvTiempo = binding.tvTiempo
-       tvDistancia = binding.tvDistancia
-       tvRitmoMedio = binding.tvRitmoMedio
-       tvVelocidad = binding.tvVelocidad
-
-       listaPuntos = arrayListOf()
-       (listaPuntos as ArrayList<LatLng>).clear()
+        listaPuntos = arrayListOf()
+        (listaPuntos as ArrayList<LatLng>).clear()
     }
 
-     private val updateTime : BroadcastReceiver = object : BroadcastReceiver() {
-       override fun onReceive(context: Context, intent: Intent) {
 
-           tiempoCarrera = intent.getDoubleExtra(MyServicio.TIMER_EXTRA, 0.0)
-           binding.tvTiempo.text = getTimeStringFromDoblue(tiempoCarrera)
+    private fun iniciarObjetos() {
 
-       }
-   }
 
+        val intent = Intent(applicationContext, MyServicio::class.java)
+
+        //BOTON PLAY
+
+        intent.putExtra(MyServicio.TIEMPO_EXTRA, tiempoCarreraInterfaz)
+        binding.floatingActionButton.setOnClickListener {
+            if (tiempoCarreraInterfaz == 0.0) {
+                tiempoEmpezado = true
+                startForegroundService(intent)
+                registerReceiver(
+                    actualizadorInterfaz,
+                    IntentFilter(MyServicio.ACTUALIZACION_CARRERA)
+                )
+            }
+
+
+        }
+
+        //BOTON PAUSA
+        binding.fabPausa.setOnClickListener {
+            tiempoEmpezado = false
+            MyServicio.tiempoCompanion = tiempoCarreraInterfaz
+            MyServicio.distanciaCompanion = distanciaInterfaz
+            MyServicio.ritmoMedioCompanion = ritmoMedioInterfaz
+            stopService(intent)
+        }
+
+
+        //BOTON STOP
+        binding.fabStop.setOnClickListener {
+            tiempoEmpezado = false
+            stopService(intent)
+
+        }
+
+    }
+
+
+    //OBJETO BROADCAST_RECEIVER
+    private val actualizadorInterfaz: BroadcastReceiver = object : BroadcastReceiver() {
+
+        override fun onReceive(context: Context, intent: Intent) {
+
+            carreraRealizada = intent.getParcelableExtra(MyServicio.OBJETO_CARRERA)
+
+            //RECEPCION DE PARAMETROS
+            tiempoCarreraInterfaz = carreraRealizada!!.tiempoCarrera
+            distanciaInterfaz = carreraRealizada!!.distanciaCarrera
+            velocidadInterfaz = carreraRealizada!!.velocidadCarrera
+            ritmoMedioInterfaz = carreraRealizada!!.ritmoMedioCarrera
+
+            //MUESTRA DE PARAMETROS EN LA INTERFAZ
+            binding.tvTiempo.text = getTimeStringFromDoblue(tiempoCarreraInterfaz)
+            binding.tvDistancia.text = redondeaNumeros(distanciaInterfaz.toString(), 2)
+            binding.tvVelocidad.text = redondeaNumeros(velocidadInterfaz.toString(), 2)
+            binding.tvRitmo.text = redondeaNumeros(ritmoMedioInterfaz.toString(), 2)
+
+        }
+    }
+
+    @SuppressLint("MissingPermission")
     override fun onMapReady(googleMap: GoogleMap) {
+
         mapa = googleMap
         googleMap.setOnMyLocationButtonClickListener(this)
         googleMap.setOnMyLocationClickListener(this)
+        mapa.mapType = GoogleMap.MAP_TYPE_HYBRID
         enableMyLocation()
+        var FusedLocationProviderClientAux = LocationServices.getFusedLocationProviderClient(this)
+        FusedLocationProviderClientAux.lastLocation
+            .addOnSuccessListener { location: Location? ->
+
+                centrarMapa(location!!.latitude, location.longitude)
+            }
+
     }
 
     /**
@@ -141,9 +211,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback,
             .show()
     }
 
-
-
-    // [START maps_check_location_permission_result]
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String>,
@@ -172,16 +239,11 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback,
             enableMyLocation()
         } else {
             // Permission was denied. Display an error message
-            // [START_EXCLUDE]
             // Display the missing permission error dialog when the fragments resume.
             permissionDenied = true
-            // [END_EXCLUDE]
         }
     }
 
-
-
-    // [END maps_check_location_permission_result]
     override fun onResumeFragments() {
         super.onResumeFragments()
         if (permissionDenied) {
@@ -198,39 +260,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback,
         newInstance(true).show(supportFragmentManager, "dialog")
     }
 
-    companion object {
-
-        private const val LOCATION_PERMISSION_REQUEST_CODE = 1
-
-        var contadorTiempo = 0
-        var contadorTiempo2 = 0
-        var velocidad = 0.0
-        var ritmoMedio = 0.0
-        var distancia = 0.0
-
-        lateinit var mapa:GoogleMap
-
-        lateinit var tvTiempo:TextView
-        lateinit var tvDistancia: TextView
-        lateinit var tvRitmoMedio: TextView
-        lateinit var tvVelocidad: TextView
-
-        lateinit var listaPuntos : Iterable<LatLng>
-
-
-
-
-        //Metodo que centra el mapa en la posicion del movil
-        fun centrarMapa(latInicial: Double, longInicial: Double) {
-
-            val posicionMapa = LatLng(latInicial, longInicial)
-            mapa.animateCamera(CameraUpdateFactory.newLatLngZoom(posicionMapa, 17f), 1000, null)
-
-        }
-
-    }
-
-    private fun makeTimeString(hours: Int, minutes: Int, seconds: Int): String = String.format("%02d:%02d:%02d", hours, minutes, seconds)
+    private fun makeTimeString(hours: Int, minutes: Int, seconds: Int): String =
+        String.format("%02d:%02d:%02d", hours, minutes, seconds)
 
 
     private fun getTimeStringFromDoblue(time: Double): String {
@@ -238,8 +269,42 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback,
         val resultadoEntero = time.roundToInt()
         val hours = resultadoEntero % 86400 / 3600
         val minutes = resultadoEntero % 86400 % 3600 / 60
-        val seconds = resultadoEntero % 86400 % 3600 %60
+        val seconds = resultadoEntero % 86400 % 3600 % 60
 
-        return makeTimeString ( hours, minutes, seconds)
+        return makeTimeString(hours, minutes, seconds)
     }
+
+    //Metodo que redondea los datos calculados
+    fun redondeaNumeros(dato: String, decimales: Int): String {
+        var d: String = dato
+        var p = d.indexOf(".", 0)
+
+        if (p != null) {
+            var limite: Int = p + decimales + 1
+            if (d.length <= p + decimales + 1) limite = d.length //-1
+            d = d.subSequence(0, limite).toString()
+        }
+
+        return d
+    }
+
+    companion object {
+
+
+        const val LOCATION_PERMISSION_REQUEST_CODE = 1
+        lateinit var mapa: GoogleMap
+
+        lateinit var listaPuntos: Iterable<LatLng>
+
+        //Metodo que centra el mapa en la posicion del movil
+        fun centrarMapa(latInicial: Double, longInicial: Double) {
+
+            val posicionMapa = LatLng(latInicial, longInicial)
+            mapa.animateCamera(CameraUpdateFactory.newLatLngZoom(posicionMapa, 18f), 1000, null)
+
+        }
+
+    }
+
+
 }

@@ -2,33 +2,22 @@ package com.jarica.runnica2
 
 import android.annotation.SuppressLint
 import android.app.*
-import android.content.ContentValues.TAG
 import android.content.Intent
 import android.location.Location
 import android.os.Build
 import android.os.IBinder
 import android.os.Looper
-import android.util.Log
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.gms.maps.model.RoundCap
-import com.jarica.runnica2.Constantes.FASTEST_INTERVAL
 import com.jarica.runnica2.Constantes.ID_CANAL
 import com.jarica.runnica2.Constantes.ID_NOTIFICACION
-import com.jarica.runnica2.Constantes.UPDATE_INTERVAL
 import com.jarica.runnica2.Constantes.radioTierra
 import com.jarica.runnica2.MainActivity.Companion.centrarMapa
-import com.jarica.runnica2.MainActivity.Companion.contadorTiempo
-import com.jarica.runnica2.MainActivity.Companion.distancia
 import com.jarica.runnica2.MainActivity.Companion.listaPuntos
 import com.jarica.runnica2.MainActivity.Companion.mapa
-import com.jarica.runnica2.MainActivity.Companion.ritmoMedio
-import com.jarica.runnica2.MainActivity.Companion.tvDistancia
-import com.jarica.runnica2.MainActivity.Companion.tvRitmoMedio
-import com.jarica.runnica2.MainActivity.Companion.tvVelocidad
-import com.jarica.runnica2.MainActivity.Companion.velocidad
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -36,13 +25,19 @@ import kotlin.collections.ArrayList
 class MyServicio() : Service() {
 
     private val timer = Timer()
-    private var tiempoCarrera = 0.0
 
+    //VARIABLES CARERRA
+    private var tiempoCarrera: Double = tiempoCompanion
+    private var distanciaCarrera: Double = distanciaCompanion
+    private var velocidadCarrera: Double = 0.0
+    private var ritmoMedioCarrera: Double = ritmoMedioCompanion
+
+    //VARIABLES GPS Y LOCALIZACION
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
-    //Variables de mediciones
-    private var latitud:Double = 0.0
-    private var longitud:Double = 0.0
+    //VARIABLES MEDICIONES
+    private var latitud: Double = 0.0
+    private var longitud: Double = 0.0
 
 
     override fun onBind(intent: Intent): IBinder? = null
@@ -52,17 +47,13 @@ class MyServicio() : Service() {
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
         crearCanaldeNotificacion()
 
-
     }
 
     @SuppressLint("MissingPermission")
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
-        Log.d(TAG, "Servivcio Iniciado")
         mostrarNotificacion()
-
-
-        tiempoCarrera = intent!!.getDoubleExtra(TIMER_EXTRA, 0.0)
+        tiempoCarrera = intent!!.getDoubleExtra(TIEMPO_EXTRA, 0.0)
         timer.scheduleAtFixedRate(TimeTask(tiempoCarrera), 0, 1000)
 
         return START_NOT_STICKY
@@ -74,14 +65,20 @@ class MyServicio() : Service() {
         super.onDestroy()
     }
 
-    private inner class TimeTask (private var tiempoCarrera: Double): TimerTask(){
+    //CALSE QUE EJECUTA UN HILO PARA LA CARRERA
+    private inner class TimeTask(private var tiempoCarreraAux: Double) : TimerTask() {
 
         override fun run() {
 
-            val intent = Intent (TIMER_UPDATE)
-            tiempoCarrera++
+            val intent = Intent(ACTUALIZACION_CARRERA)
+
+            tiempoCarreraAux++
+            tiempoCarrera = tiempoCarreraAux
             adminitrarLocalizacion()
-            intent.putExtra(TIMER_EXTRA, tiempoCarrera)
+            mostrarNotificacion()
+            var carrera =
+                Carrera(tiempoCarrera, distanciaCarrera, velocidadCarrera, ritmoMedioCarrera)
+            intent.putExtra(OBJETO_CARRERA, carrera)
             sendBroadcast(intent)
 
         }
@@ -93,7 +90,7 @@ class MyServicio() : Service() {
 
         fusedLocationProviderClient.lastLocation.addOnSuccessListener { location ->
             solicitarNuevaLocalizacion()
-                }
+        }
     }
 
     //Metodo que solicita una nueva localizacion
@@ -105,31 +102,27 @@ class MyServicio() : Service() {
         miSolicitudLocalizacion.fastestInterval = 0
         miSolicitudLocalizacion.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
 
-        fusedLocationProviderClient.requestLocationUpdates(miSolicitudLocalizacion, miLocalizacionCallBack, Looper.getMainLooper() )
+        fusedLocationProviderClient.requestLocationUpdates(
+            miSolicitudLocalizacion,
+            miLocalizacionCallBack,
+            Looper.getMainLooper()
+        )
 
     }
 
     private val miLocalizacionCallBack = object : LocationCallback() {
 
-            override fun onLocationResult(locationResult: LocationResult) {
+        override fun onLocationResult(locationResult: LocationResult) {
 
-                val miUltimaLocalizacion : Location? = locationResult.lastLocation
-
-                /*contadorTiempo++
-                var tiempo:String = getTimeStringFromDoblue(contadorTiempo)
-               // tvTiempo.text = tiempo
-                tvDistancia.text = roundNumber(distancia.toString(), 2)
-                tvRitmoMedio.text = roundNumber(ritmoMedio.toString(),2)
-                tvVelocidad.text = roundNumber(velocidad.toString(),2)*/
+            val miUltimaLocalizacion: Location? = locationResult.lastLocation
 
 
-                if (miUltimaLocalizacion != null) {
-                    registrarNuevaLocalizacion(miUltimaLocalizacion)
-                }
-
-                mostrarNotificacion()
-                println(contadorTiempo)
+            if (miUltimaLocalizacion != null) {
+                registrarNuevaLocalizacion(miUltimaLocalizacion)
             }
+
+            mostrarNotificacion()
+        }
 
     }
 
@@ -140,25 +133,27 @@ class MyServicio() : Service() {
         var new_latitude: Double = location.latitude
         var new_longitude: Double = location.longitude
 
-        if( tiempoCarrera == 1.0){
+        if (tiempoCarrera == 1.0) {
             latitud = location.latitude
             longitud = location.longitude
         }
 
-        if (tiempoCarrera > 1.0){
+        if (tiempoCarrera > 1.0) {
             new_latitude = location.latitude
             new_longitude = location.longitude
+
+            //CALCULOS DE DATOS
+            var distanciaIntervalo = calcularDistancia(new_latitude, new_longitude)
+            calcularVelocidad(distanciaIntervalo)
+            calcularRitmo()
+
+            //Dicujado de la polilinea
+            var nuevaPosicion = LatLng(new_latitude, new_longitude)
+            (listaPuntos as ArrayList<LatLng>).add(nuevaPosicion)
+            crearPolilinea(listaPuntos)
         }
 
-        var distanciaIntervalo = calcularDistancia(new_latitude, new_longitude)
-        calcularVelocidad(distanciaIntervalo)
-        calcularRitmo()
 
-        //Dicujado de la polilinea
-        var nuevaPosicion = LatLng(new_latitude,new_longitude)
-        (listaPuntos as ArrayList<LatLng>).add(nuevaPosicion)
-        println(listaPuntos)
-        crearPolilinea(listaPuntos)
 
         latitud = new_latitude
         longitud = new_longitude
@@ -176,31 +171,35 @@ class MyServicio() : Service() {
     }
 
 
+    ///////////// METODOS PAAR MOSTRAR NoTIFICACION DE SERVICIO EN PRIMER PLANO ////////////////
+
     private fun mostrarNotificacion() {
 
         val pendingIntent: PendingIntent =
             Intent(this, MyServicio::class.java).let { notificationIntent ->
-                PendingIntent.getActivity(this, 0, notificationIntent,
-                    PendingIntent.FLAG_IMMUTABLE)
+                PendingIntent.getActivity(
+                    this, 0, notificationIntent,
+                    PendingIntent.FLAG_IMMUTABLE
+                )
             }
 
         val notification = Notification
             .Builder(this, ID_CANAL)
-            .setContentText(getTimeStringFromDoblue(contadorTiempo))
-            .setSmallIcon(R.drawable.ic_bike)
+            .setContentText(getTimeStringFromDoblue(tiempoCarrera.toInt()))
+            .setSmallIcon(R.drawable.ic_bike)    ///////////////////  CAMBIAR ICONO SEGUN DEPORTE ////////////////
             .setContentIntent(pendingIntent)
             .build()
 
-// Notification ID cannot be 0.
         startForeground(ID_NOTIFICACION, notification)
     }
 
     private fun crearCanaldeNotificacion() {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
             val canalServicio = NotificationChannel(
                 ID_CANAL, "Mi canal Servicio",
-                NotificationManager.IMPORTANCE_LOW)
+                NotificationManager.IMPORTANCE_LOW
+            )
 
             val manager = getSystemService(
                 NotificationManager::class.java
@@ -209,14 +208,14 @@ class MyServicio() : Service() {
             manager.createNotificationChannel(canalServicio)
 
 
-
         }
     }
 
-    //////////  CALCULOS ///////////////
+
+    //////////  CALCULOS y METODOS AUXILIARES ///////////////
 
     //Metodo que calcula la distancia recorrida en un intervalo de timepo
-    private fun calcularDistancia(n_lt: Double, n_lg: Double): Double{
+    private fun calcularDistancia(n_lt: Double, n_lg: Double): Double {
 
         //Calculo de los deltas
         val dLat = Math.toRadians(n_lt - latitud)
@@ -227,35 +226,40 @@ class MyServicio() : Service() {
         val va1 =
             Math.pow(sindLat, 2.0) + (Math.pow(sindLng, 2.0)
                     * Math.cos(Math.toRadians(latitud)) * Math.cos(
-                Math.toRadians( n_lt  )
+                Math.toRadians(n_lt)
             ))
         val va2 = 2 * Math.atan2(Math.sqrt(va1), Math.sqrt(1 - va1))
-        var n_distance =  radioTierra * va2
+        var n_distance = radioTierra * va2
 
-        distancia += n_distance
-        return n_distance
+        if (n_distance < 100) {
+            distanciaCarrera += n_distance
+            return n_distance
+        } else {
+            return n_distance
+        }
     }
 
-    private fun makeTimeString(hours: Int, minutes: Int, seconds: Int): String = String.format("%02d:%02d:%02d", hours, minutes, seconds)
+    private fun makeTimeString(hours: Int, minutes: Int, seconds: Int): String =
+        String.format("%02d:%02d:%02d", hours, minutes, seconds)
 
 
     private fun getTimeStringFromDoblue(time: Int): String {
 
         val hours = time % 86400 / 3600
         val minutes = time % 86400 % 3600 / 60
-        val seconds = time % 86400 % 3600 %60
+        val seconds = time % 86400 % 3600 % 60
 
-        return makeTimeString ( hours, minutes, seconds)
+        return makeTimeString(hours, minutes, seconds)
     }
 
     //Metodo que redondea los datos calculados
-    private fun roundNumber(data: String, decimals: Int) : String{
-        var d : String = data
-        var p= d.indexOf(".", 0)
+    fun redondeaNumeros(data: String, decimals: Int): String {
+        var d: String = data
+        var p = d.indexOf(".", 0)
 
-        if (p != null){
-            var limit: Int = p+decimals +1
-            if (d.length <= p+decimals+1) limit = d.length //-1
+        if (p != null) {
+            var limit: Int = p + decimals + 1
+            if (d.length <= p + decimals + 1) limit = d.length //-1
             d = d.subSequence(0, limit).toString()
         }
 
@@ -263,22 +267,30 @@ class MyServicio() : Service() {
     }
 
 
+    //Metodo que calcula la velocidad en el intervalo
+    fun calcularVelocidad(distanciaIntervalo: Double) {
 
-    //Metodo que calcula la velocidad
-    private fun calcularVelocidad(distanciaIntervalo: Double) {
+        velocidadCarrera = ((distanciaIntervalo * 1000)) * 3.6 //Para pasar a KM/h
 
-        velocidad = ((distanciaIntervalo * 1000)) * 3.6 //Para pasar a KM/h
-        if(velocidad<0.25f) velocidad = 0.00
+        if (velocidadCarrera < 0.25f) velocidadCarrera =
+            0.00 // poor si apenass hay movimiento que no se vuelva loca la interfaz
+
     }
 
     //Metodo que calcula el ritmo de la carrera
-    private fun calcularRitmo() {
-        ritmoMedio = contadorTiempo/ (distancia*60)
+    fun calcularRitmo() {
+        ritmoMedioCarrera = tiempoCarrera / (distanciaCarrera * 60)
     }
 
+
     companion object {
-        const val TIMER_UPDATE = "timerUpdated"
-        const val TIMER_EXTRA = "timeExtra"
+        var tiempoCompanion = -1.0
+        var distanciaCompanion = 0.0
+        var ritmoMedioCompanion = 0.0
+
+        const val OBJETO_CARRERA = "objetoCarrera"
+        const val ACTUALIZACION_CARRERA = "actualizacionCarrera"
+        const val TIEMPO_EXTRA = "tiempoExtra"
     }
 
 }

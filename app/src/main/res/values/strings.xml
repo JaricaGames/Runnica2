@@ -1,3 +1,19 @@
 <resources>
     <string name="app_name">Runnica</string>
+
+    //MainActivity
+    <string name="tvTiempo">00:00:00</string>
+
+
+    //Navigation Bar
+    <string name="titulo_ActionBar">Runnica</string>
+    <string name="Actividad">Actividad</string>
+    <string name="Progreso">Historial</string>
+    <string name="Cuenta">Cuenta</string>
+    <string name="Perfil">Perfil</string>
+    <string name="CerrarSesion">Cerrar sesión</string>
+    <string name="Restablecer">Restablecer ajustes</string>
+    <string name="navigation_drawer_open">Open</string>
+    <string name="navigation_drawer_close">Close</string>
+
 </resources>
