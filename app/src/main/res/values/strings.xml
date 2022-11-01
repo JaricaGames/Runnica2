@@ -1,8 +1,43 @@
 <resources>
     <string name="app_name">Runnica</string>
 
+    //Login layout
+    <string name="fraseentrada">¿ Preparado ?</string>
+    <string name="email">Email</string>
+    <string name="contraseña">Contraseña</string>
+    <string name="IniciarSesion">Iniciar sesión</string>
+    <string name="olvido">¿ Olvidaste tu contraseña ?</string>
+    <string name="InicioSesionCon">o inicia sesión con</string>
+
+    <string name="nocuenta">¿ No tienes cuenta ?</string>
+    <string name="registro">Registrate</string>
+    <string name="Facebook">Facebook</string>
+    <string name="Google">Google</string>
+    <string name="bienvenida">¡Bienvenido!</string>
+
     //MainActivity
     <string name="tvTiempo">00:00:00</string>
+    <string name="tvtextoTiempo">Duración</string>
+    <string name="tvDistancia">0,00</string>
+    <string name="tvDistanciaTexto">Distancia (Km)</string>
+    <string name="tvVelocidad">0,00</string>
+    <string name="tvVelocidadTexto">Velocidad (Km/h)</string>
+    <string name="tvRitmo">0,00</string>
+    <string name="tvRitmoTexto">Ritmo (min/km)</string>
+
+    //Registro Layout
+    <string name="Nombre">Nombre usuario</string>
+    <string name="bienvenido">¡¡ Bienvenido !!</string>
+    <string name="Registrarse">Registrate</string>
+    <string name="Repitecontraseña">Repite contraseña</string>
+    <string name="terminos">terminos y condiciones de uso</string>
+    <string name="leido">He leido y acepto los</string>
+
+    //Errores Registro
+    <string name="contrasediferente">No coinciden las contraseñas introducidas</string>
+    <string name="contrase6caracteres">La contraseña debe tener al menos 6 caracteres</string>
+    <string name="faltandatos">Falta algún dato por rellenar</string>
+    <string name="terminosycondiciones">Tienes que aceptar los términos y condiciones</string>
 
 
     //Navigation Bar
@@ -15,5 +50,29 @@
     <string name="Restablecer">Restablecer ajustes</string>
     <string name="navigation_drawer_open">Open</string>
     <string name="navigation_drawer_close">Close</string>
+
+    //Barra deporte seleccionado
+    <string name="Correr">Correr</string>
+    <string name="Andar">Andar</string>
+    <string name="Bicicleta">Bicicleta</string>
+    <string name="title_activity_seleccionar_deporte">seleccionar_deporte</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="title_activity_selecionar">selecionar</string>
+
+    //Activity Final de actividad
+    <string name="DiaRegistroActividad">Jueves</string>
+    <string name="FechaRegistroActividad">21 de Julio de 2022 10:41 p.m.</string>
+    <string name="Distancia">Distancia (Km)</string>
+    <string name="Tiempo">Tiempo</string>
+    <string name="ritmoTexto">Ritmo Medio (min/Km)</string>
+    <string name="Guardar">Guardar</string>
+    <string name="title_activity_seleccion_actividad">seleccionActividad_activity</string>
 
 </resources>

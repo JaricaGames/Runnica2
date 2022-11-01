@@ -8,11 +8,17 @@
     <color name="black">#FF000000</color>
 
     <color name="blanco">#FFFFFFFF</color>
-    <color name="gris">#7C7C7C</color>
+    <color name="gris">#EEEEEE</color>
     <color name="azul">#4CA1AF</color>
     <color name="navy">#2C3E50</color>
 
     <color name="transparente">#00000000</color>
+    <color name="google">#ea4335</color>
+    <color name="facebook">#0266c8</color>
+
+    <color name="azul_oscuro_transparente">#252C3E50</color>
+    <color name="gris_transparente">#CD000000</color>
+    <color name="gris_oscuro">#828282</color>
 
 
 

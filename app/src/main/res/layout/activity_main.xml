@@ -6,24 +6,22 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
+    tools:context=".UI.MainActivity"
     tools:openDrawer="start"
     android:id="@+id/drawer_layout"
     style="@style/Theme.Runnica2">
 
-    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".MainActivity">
+        tools:context=".UI.MainActivity">
 
 
         <TextView
             android:id="@+id/tvTiempo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="55dp"
+            android:layout_marginTop="50dp"
             android:fontFamily="@font/poppins_extrabold"
             android:text="@string/tvTiempo"
             android:textAlignment="textStart"
@@ -39,7 +37,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="-18dp"
             android:fontFamily="@font/poppins_regular"
-            android:text="Duración"
+            android:text="@string/tvtextoTiempo"
             android:textColor="@color/navy"
             android:textSize="11sp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -52,7 +50,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:fontFamily="@font/poppins_bold"
-            android:text="0,00"
+            android:text="@string/tvDistancia"
             android:textAlignment="center"
             android:textColor="@color/azul"
             android:textSize="22sp"
@@ -65,9 +63,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/poppins_regular"
-            android:text="Distancia (Km)"
+            android:text="@string/tvDistanciaTexto"
             android:textColor="@color/navy"
-            android:textSize="10sp"
+            android:textSize="11sp"
             app:layout_constraintEnd_toStartOf="@+id/tvVelocidadTexto"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvDistancia" />
@@ -78,7 +76,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:fontFamily="@font/poppins_bold"
-            android:text="0,00"
+            android:text="@string/tvVelocidad"
             android:textAlignment="center"
             android:textColor="@color/azul"
             android:textSize="22sp"
@@ -91,9 +89,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/poppins_regular"
-            android:text="Velocidad (Km/h)"
+            android:text="@string/tvVelocidadTexto"
             android:textColor="@color/navy"
-            android:textSize="10sp"
+            android:textSize="11sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvDistancia" />
@@ -104,7 +102,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:fontFamily="@font/poppins_bold"
-            android:text="0,00"
+            android:text="@string/tvRitmo"
             android:textAlignment="center"
             android:textColor="@color/azul"
             android:textSize="22sp"
@@ -117,9 +115,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/poppins_regular"
-            android:text="Ritmo (min/Km)"
+            android:text="@string/tvRitmoTexto"
             android:textColor="@color/navy"
-            android:textSize="10sp"
+            android:textSize="11sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/tvVelocidadTexto"
             app:layout_constraintTop_toBottomOf="@+id/tvDistancia" />
@@ -136,7 +134,6 @@
             app:layout_constraintTop_toBottomOf="@id/tvVelocidadTexto">
 
             <androidx.fragment.app.FragmentContainerView
-                xmlns:map="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/Googlemap"
                 android:name="com.google.android.gms.maps.SupportMapFragment"
                 android:layout_width="match_parent"
@@ -184,7 +181,8 @@
     <include
         layout="@layout/app_bar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        />
 
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/nav_view"

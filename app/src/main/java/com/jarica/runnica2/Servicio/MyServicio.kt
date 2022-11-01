@@ -1,4 +1,4 @@
-package com.jarica.runnica2
+package com.jarica.runnica2.Servicio
 
 import android.annotation.SuppressLint
 import android.app.*
@@ -12,15 +12,19 @@ import com.google.android.gms.location.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.gms.maps.model.RoundCap
-import com.jarica.runnica2.Constantes.ACTUALIZACION_CARRERA
-import com.jarica.runnica2.Constantes.ID_CANAL
-import com.jarica.runnica2.Constantes.ID_NOTIFICACION
-import com.jarica.runnica2.Constantes.OBJETO_CARRERA
-import com.jarica.runnica2.Constantes.TIEMPO_EXTRA
-import com.jarica.runnica2.Constantes.radioTierra
-import com.jarica.runnica2.MainActivity.Companion.centrarMapa
-import com.jarica.runnica2.MainActivity.Companion.listaPuntos
-import com.jarica.runnica2.MainActivity.Companion.mapa
+import com.jarica.runnica2.Utilidades.Constantes.ACTUALIZACION_CARRERA
+import com.jarica.runnica2.Utilidades.Constantes.ID_CANAL
+import com.jarica.runnica2.Utilidades.Constantes.ID_NOTIFICACION
+import com.jarica.runnica2.Utilidades.Constantes.INTERVALO_ACTUALIZACION
+import com.jarica.runnica2.Utilidades.Constantes.INTERVALO_MAS_RAPIDO
+import com.jarica.runnica2.Utilidades.Constantes.OBJETO_CARRERA
+import com.jarica.runnica2.Utilidades.Constantes.TIEMPO_EXTRA
+import com.jarica.runnica2.Utilidades.Constantes.radioTierra
+import com.jarica.runnica2.Dataclasses.Carrera
+import com.jarica.runnica2.UI.MainActivity.Companion.centrarMapa
+import com.jarica.runnica2.UI.MainActivity.Companion.listaPuntos
+import com.jarica.runnica2.UI.MainActivity.Companion.mapa
+import com.jarica.runnica2.R
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -43,7 +47,7 @@ class MyServicio() : Service() {
     private var longitud: Double = 0.0
 
 
-    override fun onBind(intent: Intent): IBinder? = null
+    override fun onBind(intent: Intent): IBinder? = null // Metodo obligatorio y que no es necesario
 
     override fun onCreate() {
 
@@ -77,12 +81,14 @@ class MyServicio() : Service() {
 
             tiempoCarreraAux++
             tiempoCarrera = tiempoCarreraAux
-            adminitrarLocalizacion()
             mostrarNotificacion()
+
+            adminitrarLocalizacion()
             var carrera =
                 Carrera(tiempoCarrera, distanciaCarrera, velocidadCarrera, ritmoMedioCarrera)
             intent.putExtra(OBJETO_CARRERA, carrera)
             sendBroadcast(intent)
+
 
         }
 
@@ -101,8 +107,8 @@ class MyServicio() : Service() {
     private fun solicitarNuevaLocalizacion() {
 
         var miSolicitudLocalizacion = com.google.android.gms.location.LocationRequest()
-        miSolicitudLocalizacion.interval = 1000
-        miSolicitudLocalizacion.fastestInterval = 0
+        miSolicitudLocalizacion.interval = INTERVALO_ACTUALIZACION
+        miSolicitudLocalizacion.fastestInterval = INTERVALO_MAS_RAPIDO
         miSolicitudLocalizacion.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
 
         fusedLocationProviderClient.requestLocationUpdates(
@@ -188,7 +194,14 @@ class MyServicio() : Service() {
 
         val notification = Notification
             .Builder(this, ID_CANAL)
-            .setContentText(getTimeStringFromDoblue(tiempoCarrera.toInt()))
+            .setContentText(
+                getTimeStringFromDoblue(tiempoCarrera.toInt()) + "           ${
+                    redondeaNumeros(
+                        distanciaCarrera.toString(),
+                        2
+                    )
+                } Km"
+            )
             .setSmallIcon(R.drawable.ic_bike)    ///////////////////  CAMBIAR ICONO SEGUN DEPORTE ////////////////
             .setContentIntent(pendingIntent)
             .build()
@@ -290,10 +303,6 @@ class MyServicio() : Service() {
         var tiempoCompanion = -1.0
         var distanciaCompanion = 0.0
         var ritmoMedioCompanion = 0.0
-
-        /*const val OBJETO_CARRERA = "objetoCarrera"
-        const val ACTUALIZACION_CARRERA = "actualizacionCarrera"
-        const val TIEMPO_EXTRA = "tiempoExtra"*/
     }
 
 }

@@ -1,12 +1,10 @@
-package com.jarica.runnica2
-
-import java.net.IDN
+package com.jarica.runnica2.Utilidades
 
 object Constantes {
     const val ID_CANAL = "ID_CANAL"
     const val ID_NOTIFICACION = 1001
-    const val UPDATE_INTERVAL = 1000L
-    const val FASTEST_INTERVAL = 500L
+    const val INTERVALO_ACTUALIZACION = 1000L
+    const val INTERVALO_MAS_RAPIDO = 0L
     const val radioTierra = 6371.0 //en kilómetros
 
 
