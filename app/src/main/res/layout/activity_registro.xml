@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.RegistroActivity">
+
+    <ImageView
+        android:id="@+id/imLogo"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@drawable/bg_header"/>
+
+    <TextView
+        android:id="@+id/tvFrase"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/poppins_medium"
+        android:text="@string/bienvenido"
+        android:textAlignment="center"
+        android:paddingTop="20dp"
+
+        android:textColor="@color/navy"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imLogo"/>
+
+    <EditText
+        android:id="@+id/etNombre"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="15dp"
+        android:background="@drawable/et_login"
+        android:drawableStart="@drawable/ic_usuario"
+        android:drawablePadding="25dp"
+        android:fontFamily="@font/poppins_regular"
+        android:gravity="center_vertical"
+        android:hint="@string/Nombre"
+        android:minHeight="48dp"
+        android:paddingStart="20dp"
+        android:singleLine="false"
+        android:textColor="@color/navy"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvFrase" />
+
+    <EditText
+        android:id="@+id/etEmail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="15dp"
+        android:background="@drawable/et_login"
+        android:drawableStart="@drawable/ic_email"
+        android:drawablePadding="25dp"
+        android:fontFamily="@font/poppins_regular"
+        android:gravity="center_vertical"
+        android:hint="@string/email"
+        android:inputType="textEmailAddress"
+        android:minHeight="48dp"
+        android:paddingStart="20dp"
+        android:singleLine="false"
+        android:textColor="@color/navy"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/etNombre" />
+
+    <EditText
+        android:id="@+id/etContrasea"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="15dp"
+        android:background="@drawable/et_login"
+        android:drawableStart="@drawable/ic_contrasena"
+        android:drawablePadding="25dp"
+        android:fontFamily="@font/poppins_regular"
+        android:gravity="center_vertical"
+        android:hint="@string/Repitecontraseña"
+        android:inputType="textPassword"
+        android:minHeight="48dp"
+        android:paddingStart="20dp"
+        android:textColor="@color/navy"
+        android:textSize="14sp"
+        app:layout_constraintTop_toBottomOf="@+id/etRepiteContrasea" />
+
+    <EditText
+        android:id="@+id/etRepiteContrasea"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="15dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/et_login"
+        android:drawableStart="@drawable/ic_contrasena"
+        android:drawablePadding="25dp"
+        android:fontFamily="@font/poppins_regular"
+        android:gravity="center_vertical"
+        android:hint="@string/contraseña"
+        android:inputType="textPassword"
+        android:minHeight="48dp"
+        android:paddingStart="20dp"
+        android:textColor="@color/navy"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/etEmail" />
+
+    <CheckBox
+        android:id="@+id/cbcondiciones"
+        android:layout_width="150dp"
+        android:layout_height="48dp"
+        android:layout_margin="15dp"
+        android:fontFamily="@font/poppins_regular"
+        android:text="@string/leido"
+        android:textSize="11sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/etContrasea" />
+
+    <TextView
+        android:id="@+id/tvTerminosYCondiciones"
+        android:layout_width="182dp"
+        android:layout_height="49dp"
+        android:layout_marginTop="15dp"
+        android:fontFamily="@font/poppins_regular"
+        android:text="@string/terminos"
+        android:textSize="11sp"
+        android:gravity="center_vertical"
+        android:paddingStart="3dp"
+        android:textStyle="bold"
+        android:textColor="@color/azul"
+        app:layout_constraintStart_toEndOf="@+id/cbcondiciones"
+        app:layout_constraintTop_toBottomOf="@+id/etContrasea"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btRegistrate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="15dp"
+        android:background="@drawable/boton_redondeado"
+        android:fontFamily="@font/poppins_regular"
+        android:gravity="center"
+        android:text="@string/Registrarse"
+        android:textAllCaps="false"
+        android:textColor="@color/blanco"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cbcondiciones" />
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

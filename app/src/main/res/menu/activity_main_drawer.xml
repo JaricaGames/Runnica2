@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    >
+
+   <group>
+       <item android:id="@+id/nav_item_Actividad"
+           android:icon="@drawable/ic_run_fast"
+           android:title="@string/Actividad"
+           />
+       <item android:id="@+id/nav_item_Historial"
+           android:icon="@drawable/ic_run"
+           android:title="@string/Progreso"/>
+
+   </group>
+
+    <item android:title="@string/Cuenta">
+        <menu>
+            <group>
+                <item android:id="@+id/nav_item_Perfil"
+                    android:icon="@drawable/ic_walk"
+                    android:title="@string/Perfil"
+                    />
+
+                <item android:id="@+id/nav_item_RestableceAjustes"
+                    android:icon="@drawable/ic_walk"
+                    android:title="@string/Restablecer"/>
+                <item android:id="@+id/nav_item_CerrarSesion"
+                    android:icon="@drawable/ic_run_fast"
+                    android:title="@string/CerrarSesion"/>
+            </group>
+        </menu>
+    </item>
+</menu>

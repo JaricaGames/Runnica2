@@ -21,9 +21,9 @@ import com.jarica.runnica2.Utilidades.Constantes.OBJETO_CARRERA
 import com.jarica.runnica2.Utilidades.Constantes.TIEMPO_EXTRA
 import com.jarica.runnica2.Utilidades.Constantes.radioTierra
 import com.jarica.runnica2.Dataclasses.Carrera
-import com.jarica.runnica2.UI.MainActivity.Companion.centrarMapa
-import com.jarica.runnica2.UI.MainActivity.Companion.listaPuntos
-import com.jarica.runnica2.UI.MainActivity.Companion.mapa
+import com.jarica.runnica2.ui.MainActivity.Companion.centrarMapa
+import com.jarica.runnica2.ui.MainActivity.Companion.listaPuntos
+import com.jarica.runnica2.ui.MainActivity.Companion.mapa
 import com.jarica.runnica2.R
 import java.util.*
 import kotlin.collections.ArrayList

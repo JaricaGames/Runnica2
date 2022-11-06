@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1064293698590",
+    "project_id": "runnica2-361010",
+    "storage_bucket": "runnica2-361010.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1064293698590:android:dad508a3e2e4e99db7320f",
+        "android_client_info": {
+          "package_name": "com.jarica.runnica2"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1064293698590-go7a0ce78qp6251cdcunrmr89e02bd4v.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jarica.runnica2",
+            "certificate_hash": "3f56a39406f942be731fceb18405a763931ed6a8"
+          }
+        },
+        {
+          "client_id": "1064293698590-kb5dvk1kti2bhgl6gu28fd7hna5mqbo9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBpulqvLgAjT6inyRLMJSXxH2dqvJDYqVs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1064293698590-kb5dvk1kti2bhgl6gu28fd7hna5mqbo9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

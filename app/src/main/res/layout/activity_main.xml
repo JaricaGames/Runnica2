@@ -6,7 +6,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".UI.MainActivity"
+    tools:context=".ui.MainActivity"
     tools:openDrawer="start"
     android:id="@+id/drawer_layout"
     style="@style/Theme.Runnica2">
@@ -14,19 +14,19 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".UI.MainActivity">
+        tools:context=".ui.MainActivity">
 
 
         <TextView
             android:id="@+id/tvTiempo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="50dp"
+            android:layout_marginTop="60dp"
             android:fontFamily="@font/poppins_extrabold"
             android:text="@string/tvTiempo"
             android:textAlignment="textStart"
             android:textColor="@color/azul"
-            android:textSize="45sp"
+            android:textSize="55sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -39,7 +39,7 @@
             android:fontFamily="@font/poppins_regular"
             android:text="@string/tvtextoTiempo"
             android:textColor="@color/navy"
-            android:textSize="11sp"
+            android:textSize="12sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvTiempo" />
@@ -53,7 +53,7 @@
             android:text="@string/tvDistancia"
             android:textAlignment="center"
             android:textColor="@color/azul"
-            android:textSize="22sp"
+            android:textSize="33sp"
             app:layout_constraintEnd_toEndOf="@+id/tvDistanciaTexto"
             app:layout_constraintStart_toStartOf="@+id/tvDistanciaTexto"
             app:layout_constraintTop_toBottomOf="@+id/tvTiempo" />
@@ -65,21 +65,21 @@
             android:fontFamily="@font/poppins_regular"
             android:text="@string/tvDistanciaTexto"
             android:textColor="@color/navy"
-            android:textSize="11sp"
+            android:textSize="12sp"
             app:layout_constraintEnd_toStartOf="@+id/tvVelocidadTexto"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvDistancia" />
 
         <TextView
             android:id="@+id/tvVelocidad"
-            android:layout_width="95dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:fontFamily="@font/poppins_bold"
             android:text="@string/tvVelocidad"
             android:textAlignment="center"
             android:textColor="@color/azul"
-            android:textSize="22sp"
+            android:textSize="33sp"
             app:layout_constraintEnd_toEndOf="@+id/tvVelocidadTexto"
             app:layout_constraintStart_toStartOf="@+id/tvVelocidadTexto"
             app:layout_constraintTop_toBottomOf="@+id/tvTiempo" />
@@ -91,21 +91,21 @@
             android:fontFamily="@font/poppins_regular"
             android:text="@string/tvVelocidadTexto"
             android:textColor="@color/navy"
-            android:textSize="11sp"
+            android:textSize="12sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvDistancia" />
 
         <TextView
             android:id="@+id/tvRitmo"
-            android:layout_width="95dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:fontFamily="@font/poppins_bold"
             android:text="@string/tvRitmo"
             android:textAlignment="center"
             android:textColor="@color/azul"
-            android:textSize="22sp"
+            android:textSize="33sp"
             app:layout_constraintEnd_toEndOf="@+id/tvRitmoTexto"
             app:layout_constraintStart_toStartOf="@+id/tvRitmoTexto"
             app:layout_constraintTop_toBottomOf="@+id/tvTiempo" />
@@ -117,7 +117,7 @@
             android:fontFamily="@font/poppins_regular"
             android:text="@string/tvRitmoTexto"
             android:textColor="@color/navy"
-            android:textSize="11sp"
+            android:textSize="12sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/tvVelocidadTexto"
             app:layout_constraintTop_toBottomOf="@+id/tvDistancia" />
