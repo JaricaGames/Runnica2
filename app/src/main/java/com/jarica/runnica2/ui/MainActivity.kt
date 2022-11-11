@@ -8,12 +8,14 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.location.Location
-import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -29,7 +31,6 @@ import com.jarica.runnica2.Utilidades.Constantes.TIEMPO_EXTRA
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.material.imageview.ShapeableImageView
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -62,15 +63,26 @@ class MainActivity : AppCompatActivity(),
     private lateinit var binding: ActivityMainBinding
 
 
-    private lateinit var tvUser: TextView
-    private lateinit var sivIcon: Uri
-
     //VARIABLES NAVIGATIONDRAWER
     private lateinit var drawer: DrawerLayout
     private lateinit var toggle: ActionBarDrawerToggle
 
 
     private lateinit var headerView: android.view.View
+
+    //VARIABLES PARA LAS ANIMACIONES
+    private val movimientoArriba: Animation by lazy {
+        AnimationUtils.loadAnimation(
+            this,
+            R.anim.movimientoarriba
+        )
+    }
+    private val movimientoAbajo: Animation by lazy {
+        AnimationUtils.loadAnimation(
+            this,
+            R.anim.movimientoabajo
+        )
+    }
 
 
     //VARIABLES DE CARRERA
@@ -147,6 +159,11 @@ class MainActivity : AppCompatActivity(),
         listaPuntos as ArrayList<LatLng>
     }
 
+    override fun onResume() {
+        super.onResume()
+        recargarusuario()
+    }
+
 
     private fun iniciarObjetos() {
 
@@ -155,7 +172,8 @@ class MainActivity : AppCompatActivity(),
         //BOTON PLAY
 
         intent.putExtra(TIEMPO_EXTRA, tiempoCarreraInterfaz)
-        binding.floatingActionButton.setOnClickListener {
+        binding.fabPlay.setOnClickListener {
+
             if (tiempoCarreraInterfaz == 0.0) {
                 tiempoEmpezado = true
                 startForegroundService(intent)
@@ -163,7 +181,12 @@ class MainActivity : AppCompatActivity(),
                     actualizadorInterfaz,
                     IntentFilter(ACTUALIZACION_CARRERA)
                 )
+                cambiarbotonPlayporCandadoCerrado()
                 calcularFecha()
+            }
+
+            else {
+                binding.tvTiempo.text = "Cuuucha"
             }
 
 
@@ -176,6 +199,7 @@ class MainActivity : AppCompatActivity(),
             MyServicio.distanciaCompanion = distanciaInterfaz
             MyServicio.ritmoMedioCompanion = ritmoMedioInterfaz
             stopService(intent)
+            mostrarBotonPlayEnPausa()
         }
 
         //BOTON STOP
@@ -185,6 +209,58 @@ class MainActivity : AppCompatActivity(),
             terminarCarreraYReiniciarPantalla()
 
         }
+
+        binding.fabCandadoCerrado.setOnClickListener {
+
+            binding.fabCandadoCerrado.visibility = View.INVISIBLE
+            binding.fabCandadoAbierto.visibility = View.VISIBLE
+            iniciarAnimacionAbrirBotones()
+
+        }
+
+        binding.fabCandadoAbierto.setOnClickListener {
+
+            binding.fabCandadoCerrado.visibility = View.VISIBLE
+            binding.fabCandadoAbierto.visibility = View.INVISIBLE
+            iniciarAnimacionCerrarBotones()
+        }
+
+    }
+
+    private fun mostrarBotonPlayEnPausa() {
+
+        binding.fabPlay.visibility = View.VISIBLE
+        binding.fabCandadoAbierto.visibility = View.INVISIBLE
+        binding.fabCandadoCerrado.visibility = View.INVISIBLE
+        iniciarAnimacionCerrarBotones()
+
+    }
+
+
+    private fun iniciarAnimacionCerrarBotones() {
+
+        binding.fabStop.visibility = View.INVISIBLE
+        binding.fabPausa.visibility = View.INVISIBLE
+        binding.fabStop.startAnimation(movimientoAbajo)
+        binding.fabPausa.startAnimation(movimientoAbajo)
+
+
+    }
+
+    private fun cambiarbotonPlayporCandadoCerrado() {
+
+        binding.fabPlay.visibility = View.INVISIBLE
+        binding.fabCandadoCerrado.visibility = View.VISIBLE
+
+    }
+
+    private fun iniciarAnimacionAbrirBotones() {
+
+        binding.fabStop.visibility = View.VISIBLE
+        binding.fabPausa.visibility = View.VISIBLE
+        binding.fabStop.startAnimation(movimientoArriba)
+        binding.fabPausa.startAnimation(movimientoArriba)
+
 
     }
 
@@ -216,7 +292,7 @@ class MainActivity : AppCompatActivity(),
     }
 
     private fun calcularFecha() {
-        var formatoFechaInicioActividad = DateTimeFormatter.ofPattern("HH:mm:ss")
+        val formatoFechaInicioActividad = DateTimeFormatter.ofPattern("HH:mm:ss")
         fecha = LocalDateTime.now()
 
         fechaformateada = fecha.format(formatoFechaInicioActividad)
@@ -343,7 +419,7 @@ class MainActivity : AppCompatActivity(),
     }
 
     //Metodo que deslogea al usuario y le devuelve a la pantalla de Login
-    private fun Logout() {
+    private fun logout() {
         FirebaseAuth.getInstance().signOut()
         nombreUsuario = ""
         usuarioEmail = ""
@@ -401,7 +477,7 @@ class MainActivity : AppCompatActivity(),
 
         menuInflater.inflate(R.menu.seleccionar_deporte, menu)
 
-        var menuitem = menu?.getItem(0)
+        val menuitem = menu?.getItem(0)
 
         if (menuitem != null) {
 
@@ -451,32 +527,24 @@ class MainActivity : AppCompatActivity(),
     //Metodo que recarga el usuario tras reinicio de activity
     private fun recargarusuario() {
 
-        tvUser = binding.navView.findViewById(R.id.tvNombreUsuario)
-        println(iconoUsuario)
-
-        if (providerSesion == "Google") {
-            var sivAvatar: ShapeableImageView = binding.navView.findViewById(R.id.sivAvatar)
-            tvUser.text = nombreUsuario
-            Glide.with(this).load(iconoUsuario).into(sivAvatar)
-        }
-
-        if (providerSesion == "email") {
-
-            tvUser = binding.navView.findViewById(R.id.tvNombreUsuario)
-
-        }
-
-        var sivAvatar: ShapeableImageView = headerView.findViewById(R.id.sivAvatar)
-
-        Glide.with(this).load(iconoUsuario).into(sivAvatar)
-
         var lecturaBBDD = FirebaseFirestore.getInstance()
         lecturaBBDD.collection("usuarios").document(usuarioEmail)
             .get()
             .addOnSuccessListener { document ->
                 var usuario = document.toObject(Usuario::class.java)
-                tvUser.text = usuario?.apodo
+                binding.navView.findViewById<TextView>(R.id.tvNombreUsuario).text = usuario?.apodo
+                providerSesion = usuario?.registro.toString()
+
+                if (usuario?.registro.toString() == "Google") {
+                    Glide.with(this).load(iconoUsuario)
+                        .into(binding.navView.findViewById(R.id.sivAvatar))
+                }
+
+                if (usuario?.registro.toString() == "email") {
+
+                }
             }
+
 
     }
 
@@ -488,7 +556,7 @@ class MainActivity : AppCompatActivity(),
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
 
         when (item.itemId) {
-            R.id.nav_item_CerrarSesion -> Logout()
+            R.id.nav_item_CerrarSesion -> logout()
             R.id.nav_item_Historial -> abrirHistorial()
             R.id.nav_item_Actividad -> onBackPressed()
         }

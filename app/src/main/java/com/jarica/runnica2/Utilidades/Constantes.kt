@@ -11,4 +11,5 @@ object Constantes {
     const val OBJETO_CARRERA = "objetoCarrera"
     const val ACTUALIZACION_CARRERA = "actualizacionCarrera"
     const val TIEMPO_EXTRA = "tiempoExtra"
+
 }

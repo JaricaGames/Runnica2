@@ -31,19 +31,12 @@ class LoginActivity : AppCompatActivity() {
     //variable Firebase
     private lateinit var auth: FirebaseAuth
 
+    //Variable de vinculación de vistas
     private lateinit var binding: ActivityLoginBinding
 
     //Variables Inicio Google
     private lateinit var googleSignInClient: GoogleSignInClient
     val RC_SIGN_IN = 1000
-
-    //variables layout
-    /*private lateinit var tvRegistrate: TextView
-    private lateinit var btInicioSesion: Button
-    private lateinit var etEmail: EditText
-    private lateinit var etContraseña: EditText
-    private lateinit var tvOlvido: TextView
-    private lateinit var btGoogle: Button*/
 
     companion object {
         lateinit var usuarioEmail: String
@@ -77,7 +70,6 @@ class LoginActivity : AppCompatActivity() {
         // [END config_signin]
 
 
-
     }
     //FIN DEL ONCREATE
 
@@ -96,7 +88,7 @@ class LoginActivity : AppCompatActivity() {
             buscarUsuarioenBBDD(usuarioEmail)
             //println(providerSesion)
 
-            if(providerSesion == "Google") {
+            if (providerSesion == "Google") {
                 iconoUsuario = currentUser.photoUrl!!
                 println("Estoy aqui")
 
@@ -104,7 +96,6 @@ class LoginActivity : AppCompatActivity() {
 
             buscarUsuarioenBBDD(usuarioEmail)
             goHome()
-
 
         }
 
@@ -118,14 +109,14 @@ class LoginActivity : AppCompatActivity() {
         val BBDDFirestore: FirebaseFirestore = FirebaseFirestore.getInstance()
         BBDDFirestore.collection("usuarios").document(usuarioEmail)
             .get()
-            .addOnSuccessListener { document->
-                if (document.data?.size != null){
+            .addOnSuccessListener { document ->
+                if (document.data?.size != null) {
                     usuario = document.toObject<Usuario>()!!
                     providerSesion = usuario.registro.toString()
                     nombreUsuario = usuario.apodo.toString()
 
                     //println(providerSesion)
-                }else{
+                } else {
                     println("pringao")
                 }
 
@@ -149,8 +140,8 @@ class LoginActivity : AppCompatActivity() {
         }
 
         binding.tvolvido.setOnClickListener {
-         //   val intento = Intent(this, Olvido_Activity::class.java)
-           // startActivity(intento)
+            //   val intento = Intent(this, Olvido_Activity::class.java)
+            // startActivity(intento)
         }
 
         binding.btGoogle.setOnClickListener {
@@ -162,7 +153,9 @@ class LoginActivity : AppCompatActivity() {
     //METODO INICIO SESION CON USUARIO Y CONTRASEÑA
     private fun iniciarSesion() {
 
-        if (binding.etContraseA.text.toString().isEmpty() || binding.etEmail.text.toString().isEmpty()) {
+        if (binding.etContraseA.text.toString().isEmpty() || binding.etEmail.text.toString()
+                .isEmpty()
+        ) {
             Toast.makeText(
                 baseContext, "Faltan datos por rellenar",
                 Toast.LENGTH_SHORT
@@ -192,7 +185,6 @@ class LoginActivity : AppCompatActivity() {
         }
 
     }
-
 
 
     // [START onactivityresult - PARA INICIO DE SESION CON GOOGLE]
@@ -237,17 +229,20 @@ class LoginActivity : AppCompatActivity() {
                 }
             }
     }
+
     //Metodo que inserta en la BBDD el usuario nuevo
     @SuppressLint("SimpleDateFormat")
     private fun registrarBBDD(email: String, user: String) {
         var fechaRegistro = SimpleDateFormat("dd/MM/yyyy").format(Date())
         var registroBBDD = FirebaseFirestore.getInstance()
-        registroBBDD.collection("usuarios").document(email).set(hashMapOf(
-            "apodo" to user,
-            "fechaRegistro" to fechaRegistro,
-            "emailUsuario" to email,
-            "registro" to "Google",
-        ))
+        registroBBDD.collection("usuarios").document(email).set(
+            hashMapOf(
+                "apodo" to user,
+                "fechaRegistro" to fechaRegistro,
+                "emailUsuario" to email,
+                "registro" to "Google",
+            )
+        )
     }
 
 
@@ -259,11 +254,9 @@ class LoginActivity : AppCompatActivity() {
     // [END signin]
 
 
-    private fun showError (provider: String){
+    private fun showError(provider: String) {
         Toast.makeText(this, "Error en la conexión con $provider", Toast.LENGTH_SHORT)
     }
-
-
 
 
     //Metodo que al darle atras nos envia a la pantalla principal del movil

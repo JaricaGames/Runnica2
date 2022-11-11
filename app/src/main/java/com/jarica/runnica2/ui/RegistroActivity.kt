@@ -92,10 +92,6 @@ class RegistroActivity : AppCompatActivity() {
             Toast.makeText(this, R.string.faltandatos, Toast.LENGTH_SHORT).show()
         }
 
-
-
-
-
     }
 
     //Metodo que inserta en la BBDD el usuario nuevo

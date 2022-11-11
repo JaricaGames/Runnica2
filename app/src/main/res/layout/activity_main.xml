@@ -147,34 +147,72 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/floatingActionButton"
+            android:id="@+id/fabPlay"
             android:layout_width="78dp"
             android:layout_height="wrap_content"
             android:clickable="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:srcCompat="@android:drawable/btn_radio"
-            tools:ignore="SpeakableTextPresentCheck" />
+            app:srcCompat="@drawable/ic_play"
+            android:backgroundTint="@color/azul"
+            android:tint="@color/blanco"
+            android:layout_marginBottom="35dp"
+            android:layout_marginEnd="35dp"/>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabCandadoCerrado"
+            android:layout_width="78dp"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:srcCompat="@drawable/ic_candado_cerrado"
+            android:backgroundTint="@color/naranja"
+            android:tint="@color/blanco"
+            android:layout_marginBottom="35dp"
+            android:layout_marginEnd="35dp"
+            android:visibility="invisible"/>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabCandadoAbierto"
+            android:layout_width="78dp"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:srcCompat="@drawable/ic_candado_abierto"
+            android:backgroundTint="@color/verde"
+            android:tint="@color/blanco"
+            android:layout_marginBottom="35dp"
+            android:layout_marginEnd="35dp"
+            android:visibility="invisible"/>
 
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fabStop"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:backgroundTint="@color/azul"
             android:clickable="true"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:srcCompat="@drawable/ic_launcher_foreground" />
+            app:layout_constraintBottom_toTopOf="@+id/fabPlay"
+            app:layout_constraintEnd_toEndOf="@+id/fabPlay"
+            app:srcCompat="@drawable/ic_stop"
+            android:tint="@color/blanco"
+            android:layout_marginBottom="16dp"
+            android:visibility="invisible"/>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fabPausa"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:backgroundTint="@color/azul"
             android:clickable="true"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/floatingActionButton"
-            app:layout_constraintStart_toEndOf="@+id/fabStop"
-            app:srcCompat="@drawable/common_full_open_on_phone" />
+            app:layout_constraintBottom_toTopOf="@+id/fabStop"
+            app:layout_constraintEnd_toEndOf="@+id/fabStop"
+            android:layout_marginBottom="16dp"
+            android:tint="@color/blanco"
+            app:srcCompat="@drawable/ic_pause"
+            android:visibility="invisible"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

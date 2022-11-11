@@ -1,5 +1,6 @@
 package com.jarica.runnica2.ui
 
+import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -39,6 +40,7 @@ class HistorialActivity : AppCompatActivity() {
         binding.appbarHistorialActividad.actionbar[0].setOnClickListener { onBackPressed() }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun cargarDatosBBDD(campo: String, order: Query.Direction) {
 
         var collection = "Actividades"
