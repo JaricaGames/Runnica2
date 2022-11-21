@@ -9,12 +9,13 @@
     tools:context=".ui.MainActivity"
     tools:openDrawer="start"
     android:id="@+id/drawer_layout"
-    style="@style/Theme.Runnica2">
+    android:backgroundTint="@color/blanco">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".ui.MainActivity">
+        tools:context=".ui.MainActivity"
+        android:background="@color/blanco">
 
 
         <TextView

@@ -112,14 +112,15 @@
 
     <CheckBox
         android:id="@+id/cbcondiciones"
-        android:layout_width="150dp"
+        android:layout_width="wrap_content"
         android:layout_height="48dp"
         android:layout_margin="15dp"
         android:fontFamily="@font/poppins_regular"
         android:text="@string/leido"
         android:textSize="11sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/etContrasea" />
+        app:layout_constraintTop_toBottomOf="@+id/etContrasea"
+        />
 
     <TextView
         android:id="@+id/tvTerminosYCondiciones"
@@ -129,6 +130,7 @@
         android:fontFamily="@font/poppins_regular"
         android:text="@string/terminos"
         android:textSize="11sp"
+        android:foregroundGravity="right"
         android:gravity="center_vertical"
         android:paddingStart="3dp"
         android:textStyle="bold"
@@ -150,7 +152,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cbcondiciones" />
+        app:layout_constraintTop_toBottomOf="@+id/cbcondiciones"
+        android:enabled="false"/>
 
 
 

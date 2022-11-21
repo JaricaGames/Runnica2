@@ -13,7 +13,7 @@
         android:layout_height="50dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_bike_small"
+        app:srcCompat="@drawable/ic_usuario"
         android:layout_margin="25dp"/>
 
 

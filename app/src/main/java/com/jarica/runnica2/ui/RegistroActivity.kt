@@ -19,18 +19,14 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-
 class RegistroActivity : AppCompatActivity() {
 
     //Variable Firebase
     private lateinit var auth: FirebaseAuth
 
+    //Variable de vinculación de vistas
     private lateinit var binding: ActivityRegistroBinding
 
-    private lateinit var nombreUsuario:String
-    private lateinit var email:String
-    private lateinit var contrasena:String
-    private lateinit var repiteContrasena:String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,23 +46,22 @@ class RegistroActivity : AppCompatActivity() {
     // Metodo que crea un nuevo usuario y lo mete en la coleccion de FireBase usuarios
     private fun nuevoregistro() {
 
-        email = binding.etEmail.text.toString()
-        contrasena = binding.etContrasea.text.toString()
-        repiteContrasena = binding.etRepiteContrasea.text.toString()
-        nombreUsuario = binding.etNombre.text.toString()
 
-        if (email.isNotEmpty() || contrasena.isNotEmpty() || repiteContrasena.isNotEmpty() || nombreUsuario.isNotEmpty()){
+        if (binding.etEmail.text.isNotEmpty() || binding.etContrasea.text.isNotEmpty() || binding.etRepiteContrasea.text.isNotEmpty() || binding.etNombre.text.isNotEmpty()) {
 
-            if(contrasena == repiteContrasena){
+            if (binding.etContrasea.text == binding.etRepiteContrasea.text) {
 
-                if(contrasena.length>5){
+                if (binding.etContrasea.text.length > 5) {
 
-                    if(binding.cbcondiciones.isChecked){
-                        auth.createUserWithEmailAndPassword(email, contrasena)
+                    if (binding.cbcondiciones.isChecked) {
+                        auth.createUserWithEmailAndPassword(
+                            binding.etEmail.text.toString(),
+                            binding.etRepiteContrasea.text.toString()
+                        )
                             .addOnCompleteListener(this) { task ->
                                 if (task.isSuccessful) {
-                                    registrarBBDD(email, nombreUsuario)
-                                    usuarioEmail = email
+                                    registrarBBDD(binding.etEmail.text.toString(), nombreUsuario)
+                                    usuarioEmail = binding.etEmail.text.toString()
                                     providerSesion = "email"
                                     nombreUsuario = nombreUsuario
 
@@ -76,19 +71,20 @@ class RegistroActivity : AppCompatActivity() {
                                 }
 
                             }
-                    }else{
-                        Toast.makeText(this, R.string.terminosycondiciones, Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(this, R.string.terminosycondiciones, Toast.LENGTH_SHORT)
+                            .show()
                     }
 
-                }else{
+                } else {
                     Toast.makeText(this, R.string.contrasediferente, Toast.LENGTH_SHORT).show()
                 }
 
 
-            }else{
+            } else {
                 Toast.makeText(this, R.string.contrase6caracteres, Toast.LENGTH_SHORT).show()
             }
-        }else{
+        } else {
             Toast.makeText(this, R.string.faltandatos, Toast.LENGTH_SHORT).show()
         }
 
@@ -97,14 +93,17 @@ class RegistroActivity : AppCompatActivity() {
     //Metodo que inserta en la BBDD el usuario nuevo
     @SuppressLint("SimpleDateFormat")
     private fun registrarBBDD(email: String, user: String) {
+
         var fechaRegistro = SimpleDateFormat("dd/MM/yyyy").format(Date())
         var registroBBDD = FirebaseFirestore.getInstance()
-        registroBBDD.collection("usuarios").document(email).set(hashMapOf(
-            "apodo" to user,
-            "fechaRegistro" to fechaRegistro,
-            "emailUsuario" to email,
-            "registro" to "email",
-        ))
+        registroBBDD.collection("usuarios").document(email).set(
+            hashMapOf(
+                "apodo" to user,
+                "fechaRegistro" to fechaRegistro,
+                "emailUsuario" to email,
+                "registro" to "email",
+            )
+        )
     }
 
     //Metodo que envio a la pagina principal
@@ -115,11 +114,17 @@ class RegistroActivity : AppCompatActivity() {
 
     private fun funcionalidades() {
 
+        //Anular o activar el boton de registrarse si no estan los termines y condiciones aceptados.
+        binding.cbcondiciones.setOnClickListener {
+            if (binding.cbcondiciones.isChecked) binding.btRegistrate.isEnabled = true
+            if (!binding.cbcondiciones.isChecked) binding.btRegistrate.isEnabled = false
+        }
+
         //Boton de registrarse
-        binding.btRegistrate.setOnClickListener{nuevoregistro()}
+        binding.btRegistrate.setOnClickListener { nuevoregistro() }
 
         //Intent terminos y condiciones de uso
-        binding.tvTerminosYCondiciones.setOnClickListener{
+        binding.tvTerminosYCondiciones.setOnClickListener {
             //val intento = Intent(this, TerminosYCondiciones::class.java)
             //startActivity(intento)
         }
@@ -141,7 +146,9 @@ class RegistroActivity : AppCompatActivity() {
 
         //EditText Nueva Contraseña
         binding.etRepiteContrasea.addTextChangedListener {
-            if ( binding.etRepiteContrasea.text.toString().isEmpty())  binding.etRepiteContrasea.error = ""
+            if (binding.etRepiteContrasea.text.toString()
+                    .isEmpty()
+            ) binding.etRepiteContrasea.error = ""
         }
 
     }
@@ -150,6 +157,7 @@ class RegistroActivity : AppCompatActivity() {
         if (binding.etEmail.text.toString().isEmpty()) binding.etEmail.error = ""
         if (binding.etNombre.text.toString().isEmpty()) binding.etNombre.error = ""
         if (binding.etContrasea.text.toString().isEmpty()) binding.etContrasea.error = ""
-        if (binding.etRepiteContrasea.text.toString().isEmpty())  binding.etRepiteContrasea.error = ""
+        if (binding.etRepiteContrasea.text.toString().isEmpty()) binding.etRepiteContrasea.error =
+            ""
     }
 }

@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.app.*
 import android.content.Intent
 import android.location.Location
-import android.os.Build
 import android.os.IBinder
 import android.os.Looper
 import androidx.core.content.ContextCompat
@@ -25,12 +24,19 @@ import com.jarica.runnica2.ui.MainActivity.Companion.centrarMapa
 import com.jarica.runnica2.ui.MainActivity.Companion.listaPuntos
 import com.jarica.runnica2.ui.MainActivity.Companion.mapa
 import com.jarica.runnica2.R
+import com.jarica.runnica2.Utilidades.Constantes.INTERVALO_ACTUALIZACION_GPS_EN_SEGUNDOS
+import com.jarica.runnica2.ui.LoginActivity.Companion.deporteSeleccionado
+import com.jarica.runnica2.ui.MainActivity.Companion.distanciaCompanion
+import com.jarica.runnica2.ui.MainActivity.Companion.ritmoMedioCompanion
+import com.jarica.runnica2.ui.MainActivity.Companion.tiempoCompanion
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.math.*
 
 
-class MyServicio() : Service() {
+class MyServicio : Service() {
 
+    //VARIABLE TIMER
     private val timer = Timer()
 
     //VARIABLES CARERRA
@@ -56,14 +62,15 @@ class MyServicio() : Service() {
 
     }
 
+
     @SuppressLint("MissingPermission")
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
         mostrarNotificacion()
-        tiempoCarrera = intent!!.getDoubleExtra(TIEMPO_EXTRA, 0.0)
-        timer.scheduleAtFixedRate(TimeTask(tiempoCarrera), 0, 1000)
+        tiempoCarrera = intent!!.getDoubleExtra(TIEMPO_EXTRA, tiempoCompanion)
+        timer.scheduleAtFixedRate(TimeTask(tiempoCompanion), 0, 1000)
 
-        return START_NOT_STICKY
+        return START_STICKY
 
     }
 
@@ -83,12 +90,16 @@ class MyServicio() : Service() {
             tiempoCarrera = tiempoCarreraAux
             mostrarNotificacion()
 
-            adminitrarLocalizacion()
+            if (tiempoCarreraAux % INTERVALO_ACTUALIZACION_GPS_EN_SEGUNDOS == 0.0) {
+
+                adminitrarLocalizacion()
+            }
+
+
             var carrera =
                 Carrera(tiempoCarrera, distanciaCarrera, velocidadCarrera, ritmoMedioCarrera)
             intent.putExtra(OBJETO_CARRERA, carrera)
             sendBroadcast(intent)
-
 
         }
 
@@ -125,14 +136,12 @@ class MyServicio() : Service() {
 
             val miUltimaLocalizacion: Location? = locationResult.lastLocation
 
-
             if (miUltimaLocalizacion != null) {
                 registrarNuevaLocalizacion(miUltimaLocalizacion)
             }
 
             mostrarNotificacion()
         }
-
     }
 
     private fun registrarNuevaLocalizacion(location: Location) {
@@ -162,8 +171,6 @@ class MyServicio() : Service() {
             crearPolilinea(listaPuntos)
         }
 
-
-
         latitud = new_latitude
         longitud = new_longitude
     }
@@ -174,11 +181,10 @@ class MyServicio() : Service() {
             .color(ContextCompat.getColor(this, R.color.azul))
             .addAll(listaPuntos)
 
-        var polilinea = mapa.addPolyline(polilineaOpciones)
+        val polilinea = mapa.addPolyline(polilineaOpciones)
         polilinea.startCap = RoundCap()
 
     }
-
 
     ///////////// METODOS PAAR MOSTRAR NoTIFICACION DE SERVICIO EN PRIMER PLANO ////////////////
 
@@ -192,17 +198,23 @@ class MyServicio() : Service() {
                 )
             }
 
+        var iconId = 0
+        if (deporteSeleccionado == "Running") iconId = R.drawable.ic_run
+        if (deporteSeleccionado == "Walk") iconId = R.drawable.ic_walk
+        if (deporteSeleccionado == "Bike") iconId = R.drawable.ic_bike
+
+
         val notification = Notification
             .Builder(this, ID_CANAL)
             .setContentText(
-                getTimeStringFromDoblue(tiempoCarrera.toInt()) + "           ${
+                getTimeStringFromDoblue(tiempoCarrera.toInt()) + "          ${
                     redondeaNumeros(
                         distanciaCarrera.toString(),
                         2
                     )
                 } Km"
             )
-            .setSmallIcon(R.drawable.ic_bike)    ///////////////////  CAMBIAR ICONO SEGUN DEPORTE ////////////////
+            .setSmallIcon(iconId)    ///////////////////  CAMBIAR ICONO SEGUN DEPORTE ////////////////
             .setContentIntent(pendingIntent)
             .build()
 
@@ -210,23 +222,19 @@ class MyServicio() : Service() {
     }
 
     private fun crearCanaldeNotificacion() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
-            val canalServicio = NotificationChannel(
-                ID_CANAL, "Mi canal Servicio",
-                NotificationManager.IMPORTANCE_LOW
-            )
+        val canalServicio = NotificationChannel(
+            ID_CANAL, "Mi canal Servicio",
+            NotificationManager.IMPORTANCE_LOW
+        )
 
-            val manager = getSystemService(
-                NotificationManager::class.java
-            )
+        val manager = getSystemService(
+            NotificationManager::class.java
+        )
 
-            manager.createNotificationChannel(canalServicio)
+        manager.createNotificationChannel(canalServicio)
 
-
-        }
     }
-
 
     //////////  CALCULOS y METODOS AUXILIARES ///////////////
 
@@ -237,14 +245,14 @@ class MyServicio() : Service() {
         val dLat = Math.toRadians(n_lt - latitud)
         val dLng = Math.toRadians(n_lg - longitud)
 
-        val sindLat = Math.sin(dLat / 2)
-        val sindLng = Math.sin(dLng / 2)
+        val sindLat = sin(dLat / 2)
+        val sindLng = sin(dLng / 2)
         val va1 =
-            Math.pow(sindLat, 2.0) + (Math.pow(sindLng, 2.0)
-                    * Math.cos(Math.toRadians(latitud)) * Math.cos(
+            sindLat.pow(2.0) + (sindLng.pow(2.0)
+                    * cos(Math.toRadians(latitud)) * cos(
                 Math.toRadians(n_lt)
             ))
-        val va2 = 2 * Math.atan2(Math.sqrt(va1), Math.sqrt(1 - va1))
+        val va2 = 2 * atan2(sqrt(va1), sqrt(1 - va1))
         var n_distance = radioTierra * va2
 
         if (n_distance < 100) {
@@ -296,13 +304,6 @@ class MyServicio() : Service() {
     //Metodo que calcula el ritmo de la carrera
     fun calcularRitmo() {
         ritmoMedioCarrera = tiempoCarrera / (distanciaCarrera * 60)
-    }
-
-
-    companion object {
-        var tiempoCompanion = -1.0
-        var distanciaCompanion = 0.0
-        var ritmoMedioCompanion = 0.0
     }
 
 }

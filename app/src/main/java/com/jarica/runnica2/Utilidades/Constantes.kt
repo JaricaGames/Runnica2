@@ -6,6 +6,7 @@ object Constantes {
     const val INTERVALO_ACTUALIZACION = 1000L
     const val INTERVALO_MAS_RAPIDO = 0L
     const val radioTierra = 6371.0 //en kilómetros
+    const val INTERVALO_ACTUALIZACION_GPS_EN_SEGUNDOS = 2
 
 
     const val OBJETO_CARRERA = "objetoCarrera"

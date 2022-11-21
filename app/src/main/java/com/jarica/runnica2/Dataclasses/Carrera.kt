@@ -10,7 +10,7 @@ data class Carrera(
     var velocidadCarrera: Double,
     var ritmoMedioCarrera: Double,
 
-) : Parcelable {
+    ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readDouble(),
         parcel.readDouble(),

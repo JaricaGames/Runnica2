@@ -15,7 +15,7 @@
         android:layout_height="match_parent"
         android:padding="10dp"
         app:cardCornerRadius="5dp"
-        android:background="@color/gris">
+        android:background="@color/blanco">
 
         <ImageView
             android:id="@+id/ivDeporteCV"

@@ -2,10 +2,7 @@ package com.jarica.runnica2.ui
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.content.*
 import android.content.pm.PackageManager
 import android.location.Location
 import androidx.appcompat.app.AppCompatActivity
@@ -42,13 +39,15 @@ import com.jarica.runnica2.ui.LoginActivity.Companion.iconoUsuario
 import com.jarica.runnica2.ui.LoginActivity.Companion.nombreUsuario
 import com.jarica.runnica2.ui.LoginActivity.Companion.providerSesion
 import com.jarica.runnica2.ui.LoginActivity.Companion.usuarioEmail
-import com.jarica.runnica2.Utilidades.PermissionUtils.PermissionDeniedDialog.Companion.newInstance
 import com.jarica.runnica2.Utilidades.PermissionUtils.isPermissionGranted
 import com.jarica.runnica2.Servicio.MyServicio
 import com.jarica.runnica2.Utilidades.PermissionUtils
 import com.jarica.runnica2.Utilidades.getTimeStringFromDoblue
 import com.jarica.runnica2.Utilidades.redondeaNumeros
 import com.jarica.runnica2.databinding.ActivityMainBinding
+import com.jarica.runnica2.ui.MainActivity.Companion.distanciaCompanion
+import com.jarica.runnica2.ui.MainActivity.Companion.ritmoMedioCompanion
+import com.jarica.runnica2.ui.MainActivity.Companion.tiempoCompanion
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -83,6 +82,10 @@ class MainActivity : AppCompatActivity(),
             R.anim.movimientoabajo
         )
     }
+
+    //VARIABLE DE SHAREDPREFERENCES
+    private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var editor: SharedPreferences.Editor
 
 
     //VARIABLES DE CARRERA
@@ -123,9 +126,28 @@ class MainActivity : AppCompatActivity(),
 
         super.onCreate(savedInstanceState)
 
-
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        iniciarObjetos()
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+        recargarusuario()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        tiempoCompanion = 0.0
+    }
+
+
+    private fun iniciarObjetos() {
+
+        listaPuntos = arrayListOf()
+        listaPuntos as ArrayList<LatLng>
 
         val mapFragment =
             supportFragmentManager.findFragmentById(R.id.Googlemap) as SupportMapFragment?
@@ -151,21 +173,7 @@ class MainActivity : AppCompatActivity(),
         navigationView.setNavigationItemSelectedListener(this)
         headerView =
             LayoutInflater.from(this).inflate(R.layout.nav_header_layout, navigationView, false)
-        //navigationView.addHeaderView(headerView)
 
-        iniciarObjetos()
-
-        listaPuntos = arrayListOf()
-        listaPuntos as ArrayList<LatLng>
-    }
-
-    override fun onResume() {
-        super.onResume()
-        recargarusuario()
-    }
-
-
-    private fun iniciarObjetos() {
 
         val intent = Intent(applicationContext, MyServicio::class.java)
 
@@ -174,30 +182,24 @@ class MainActivity : AppCompatActivity(),
         intent.putExtra(TIEMPO_EXTRA, tiempoCarreraInterfaz)
         binding.fabPlay.setOnClickListener {
 
-            if (tiempoCarreraInterfaz == 0.0) {
-                tiempoEmpezado = true
-                startForegroundService(intent)
-                registerReceiver(
-                    actualizadorInterfaz,
-                    IntentFilter(ACTUALIZACION_CARRERA)
-                )
-                cambiarbotonPlayporCandadoCerrado()
-                calcularFecha()
-            }
 
-            else {
-                binding.tvTiempo.text = "Cuuucha"
-            }
-
+            tiempoEmpezado = true
+            startForegroundService(intent)
+            registerReceiver(
+                actualizadorInterfaz,
+                IntentFilter(ACTUALIZACION_CARRERA)
+            )
+            cambiarbotonPlayporCandadoCerrado()
+            calcularFecha()
 
         }
 
         //BOTON PAUSA
         binding.fabPausa.setOnClickListener {
             tiempoEmpezado = false
-            MyServicio.tiempoCompanion = tiempoCarreraInterfaz
-            MyServicio.distanciaCompanion = distanciaInterfaz
-            MyServicio.ritmoMedioCompanion = ritmoMedioInterfaz
+            tiempoCompanion = tiempoCarreraInterfaz
+            distanciaCompanion = distanciaInterfaz
+            ritmoMedioCompanion = ritmoMedioInterfaz
             stopService(intent)
             mostrarBotonPlayEnPausa()
         }
@@ -387,9 +389,7 @@ class MainActivity : AppCompatActivity(),
                 Manifest.permission.ACCESS_COARSE_LOCATION
             )
         ) {
-            PermissionUtils.RationaleDialog.newInstance(
-                LOCATION_PERMISSION_REQUEST_CODE, true
-            ).show(supportFragmentManager, "dialog")
+            Toast.makeText(this, "Por favor Acepta los permisos de localizacion", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -460,6 +460,7 @@ class MainActivity : AppCompatActivity(),
         } else {
             // Permission was denied. Display an error message
             // Display the missing permission error dialog when the fragments resume.
+            Toast.makeText(this, "Por favor Acepta los permisos de localizacion", Toast.LENGTH_SHORT).show()
             permissionDenied = true
         }
     }
@@ -501,7 +502,7 @@ class MainActivity : AppCompatActivity(),
      * Displays a dialog with error message explaining that the location permission is missing.
      */
     private fun showMissingPermissionError() {
-        newInstance(true).show(supportFragmentManager, "dialog")
+        Toast.makeText(this, "Por favor Acepta los permisos de localizacion", Toast.LENGTH_SHORT).show()
     }
 
 
@@ -521,6 +522,10 @@ class MainActivity : AppCompatActivity(),
             mapa.animateCamera(CameraUpdateFactory.newLatLngZoom(posicionMapa, 18f), 1000, null)
 
         }
+
+        var tiempoCompanion = -1.0
+        var distanciaCompanion = 0.0
+        var ritmoMedioCompanion = 0.0
 
     }
 
